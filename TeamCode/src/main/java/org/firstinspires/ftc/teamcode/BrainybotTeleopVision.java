@@ -40,6 +40,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
+import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -65,91 +67,106 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 @TeleOp(name="BrainyBots Teleop Vision", group="Mina")
 //@Disabled
 public class BrainybotTeleopVision extends LinearOpMode {
-    VuforiaLocalizer vuforiaLocalizer;
-    VuforiaLocalizer.Parameters parameters;
-    VuforiaTrackables visionTargets;
-    VuforiaTrackable target;
-    VuforiaTrackableDefaultListener listener;
+        LightSensor lightSensor;  // Hardware Device Object
 
-    OpenGLMatrix lastKnownLocation;
-    OpenGLMatrix phoneLocation;
+        VuforiaLocalizer vuforiaLocalizer;
+        VuforiaLocalizer.Parameters parameters;
+        VuforiaTrackables visionTargets;
+        VuforiaTrackable target;
+        VuforiaTrackableDefaultListener listener;
 
-    public static final String VUFORIA_KEY = "AbeG4Kr/////AAAAGYlYzgmqaUCvl9MEIXe5q7VG+bqPbYy/jH9ZIRe+MDld1JqQEnOy1ljD1xH4lUXpV5DRpXq3iD0LcgRxjm+mTWaIxZ7jB2GroVg6Nn/HbRwnDNTWqC3UBjNAuGjAlUUbMg/CC69vQXKcZl11f97ly/RIj2leGI5MimrUsaTqIcNOQe6UUnkof1LFcpT+18Z7OhqWeRnJJDh9krwMceY1TNW7IwgB+vCrFp25jeQJF9cwclsnieT/NHhjdratCGWhCdU2FHe6mQiO+pjcT2X0suJPdtwomWCVqGDg6clj0A/yHUOrC5YHJ/RROMvAidn1Uo0a1OXL2nguV0jVA/rUeqIEYxTvS5OV0ePxeXlcrAhS"; // Insert your own key here
+        OpenGLMatrix lastKnownLocation;
+        OpenGLMatrix phoneLocation;
+
+        public static final String VUFORIA_KEY = "AbeG4Kr/////AAAAGYlYzgmqaUCvl9MEIXe5q7VG+bqPbYy/jH9ZIRe+MDld1JqQEnOy1ljD1xH4lUXpV5DRpXq3iD0LcgRxjm+mTWaIxZ7jB2GroVg6Nn/HbRwnDNTWqC3UBjNAuGjAlUUbMg/CC69vQXKcZl11f97ly/RIj2leGI5MimrUsaTqIcNOQe6UUnkof1LFcpT+18Z7OhqWeRnJJDh9krwMceY1TNW7IwgB+vCrFp25jeQJF9cwclsnieT/NHhjdratCGWhCdU2FHe6mQiO+pjcT2X0suJPdtwomWCVqGDg6clj0A/yHUOrC5YHJ/RROMvAidn1Uo0a1OXL2nguV0jVA/rUeqIEYxTvS5OV0ePxeXlcrAhS"; // Insert your own key here
 
     /* Declare OpMode members. */
-    HardwareBrainybot robot           = new HardwareBrainybot();   // Use a Minabot's hardware
-                                                               // could also use HardwarePushbotMatrix class.
-    //double          clawOffset      = 0;                       // Servo mid position
-    //final double    CLAW_SPEED      = 0.02 ;                   // sets rate to move servo
+        HardwareBrainybot robot = new HardwareBrainybot();   // Use a Minabot's hardware
+        // could also use HardwarePushbotMatrix class.
+        //double          clawOffset      = 0;                       // Servo mid position
+        //final double    CLAW_SPEED      = 0.02 ;                   // sets rate to move servo
 
-    @Override
-    public void runOpMode() throws InterruptedException {
-        double leftFrontY, leftRearY;
-        double rightFrontY, rightRearY;
-        double leftFrontX, leftRearX;
-        double rightFrontX, rightRearX;
-        boolean topArmB, topArmX;
-        boolean bottomArmA, bottomArmY;
-        double maxY, maxX;
+        @Override
+        public void runOpMode ()throws InterruptedException {
+            // bPrevState and bCurrState represent the previous and current state of the button.
+            boolean bPrevState = false;
+            boolean bCurrState = false;
+
+            // bLedOn represents the state of the LED.
+            boolean bLedOn = true;
+
+            // get a reference to our Light Sensor object.
+            lightSensor = hardwareMap.lightSensor.get("light sensor");
+
+            // Set the LED state in the beginning.
+            lightSensor.enableLed(bLedOn);
+
+            double leftFrontY, leftRearY;
+            double rightFrontY, rightRearY;
+            double leftFrontX, leftRearX;
+            double rightFrontX, rightRearX;
+            boolean topArmB, topArmX;
+            boolean bottomArmA, bottomArmY;
+            double maxY, maxX;
 
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
-        setupVuforia();
-        sleep(3000);
+            setupVuforia();
+            sleep(3000);
 
-        // We don't know where the robot is, so set it to the origin
-        // If we don't include this, it would be null, which would cause errors later on
-        lastKnownLocation = createMatrix(0, 0, 0, 0, 0, 0);
-        robot.init(hardwareMap);
+            // We don't know where the robot is, so set it to the origin
+            // If we don't include this, it would be null, which would cause errors later on
+            lastKnownLocation = createMatrix(0, 0, 0, 0, 0, 0);
+            robot.init(hardwareMap);
 
-        // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "Hello Brainy Bots.");    //
-        telemetry.update();
+            // Send telemetry message to signify robot waiting;
+            telemetry.addData("Say", "Hello Brainy Bots.");    //
+            telemetry.update();
 
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-        visionTargets.activate();
+            // Wait for the game to start (driver presses PLAY)
+            waitForStart();
+            visionTargets.activate();
 
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
+            // run until the end of the match (driver presses STOP)
+            while (opModeIsActive()) {
 
-            // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
-            // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
-            // left  = -gamepad1.left_stick_y + gamepad1.right_stick_x;
-            // right = -gamepad1.left_stick_y - gamepad1.right_stick_x;
-            leftFrontY = gamepad1.left_stick_y;
-            //leftRearY = -gamepad1.left_stick_y;
-            rightFrontY = gamepad1.right_stick_y;
-            //rightRearY = gamepad1.right_stick_y;
+                // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
+                // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
+                // left  = -gamepad1.left_stick_y + gamepad1.right_stick_x;
+                // right = -gamepad1.left_stick_y - gamepad1.right_stick_x;
+                leftFrontY = gamepad1.left_stick_y;
+                //leftRearY = -gamepad1.left_stick_y;
+                rightFrontY = gamepad1.right_stick_y;
+                //rightRearY = gamepad1.right_stick_y;
 
-            leftFrontX = -gamepad1.left_stick_x;
-            //leftRearX = -gamepad1.left_stick_x;
-            rightFrontX = -gamepad1.right_stick_x;
-            //rightRearX = -gamepad1.right_stick_x;
+                leftFrontX = -gamepad1.left_stick_x;
+                //leftRearX = -gamepad1.left_stick_x;
+                rightFrontX = -gamepad1.right_stick_x;
+                //rightRearX = -gamepad1.right_stick_x;
 
-            topArmB = gamepad2.b;
-            bottomArmA = gamepad2.a;
-            topArmX = gamepad2.x;
-            bottomArmY = gamepad2.y;
+                topArmB = gamepad2.b;
+                bottomArmA = gamepad2.a;
+                topArmX = gamepad2.x;
+                bottomArmY = gamepad2.y;
 
-            // Ask the listener for the latest information on where the robot is
-            OpenGLMatrix latestLocation = listener.getUpdatedRobotLocation();
+                // Ask the listener for the latest information on where the robot is
+                OpenGLMatrix latestLocation = listener.getUpdatedRobotLocation();
 
-            // The listener will sometimes return null, so we check for that to prevent errors
-            if(latestLocation != null)
-                lastKnownLocation = latestLocation;
+                // The listener will sometimes return null, so we check for that to prevent errors
+                if (latestLocation != null)
+                    lastKnownLocation = latestLocation;
 
-            // Send information about whether the target is visible, and where the robot is
-            //telemetry.addData("Tracking " + target.getName(), listener.isVisible());
-            //telemetry.addData("Last Known Location", formatMatrix(lastKnownLocation));
+                // Send information about whether the target is visible, and where the robot is
+                //telemetry.addData("Tracking " + target.getName(), listener.isVisible());
+                //telemetry.addData("Last Known Location", formatMatrix(lastKnownLocation));
 
-            // Send telemetry and idle to let hardware catch up
-            //telemetry.update();
-            //idle();
+                // Send telemetry and idle to let hardware catch up
+                //telemetry.update();
+                //idle();
 
 
-            // Normalize the values so neither exceed +/- 1.0
+                // Normalize the values so neither exceed +/- 1.0
             /*maxY = Math.max(Math.max(Math.abs(leftFrontY), Math.abs(leftRearY)), Math.max(Math.abs(rightFrontY), Math.abs(rightRearY)));
             if (maxY > 1.0)
             {
@@ -159,7 +176,7 @@ public class BrainybotTeleopVision extends LinearOpMode {
                 rightRearY /= maxY;
             }
 */
-            //robot.armMotor.setPower(leftFrontY);
+                //robot.armMotor.setPower(leftFrontY);
             /*robot.tableMotor.setPower(leftRearY);
             robot.leftMotor.setPower(rightFrontY);
             robot.rightMotor.setPower(rightRearY);
@@ -173,76 +190,69 @@ public class BrainybotTeleopVision extends LinearOpMode {
                 rightRearX /= maxX;
             }
 */
-            //robot.armMotor.setPower(leftFrontX);
+                //robot.armMotor.setPower(leftFrontX);
             /*robot.tableMotor.setPower(leftRearX);
             robot.leftMotor.setPower(rightFrontX);
             robot.rightMotor.setPower(rightRearX);
 */
-            // Left stick, Y to front/back, turning forward/backward
-            if ((Math.abs(leftFrontY) > 0.5) && (Math.abs(leftFrontX) < 0.5) && (Math.abs(rightFrontY) > 0.5) && (Math.abs(rightFrontX) < 0.5)) {
-                robot.armMotor.setPower(leftFrontY);
-                robot.tableMotor.setPower(leftFrontY);
-                robot.leftMotor.setPower(rightFrontY);
-                robot.rightMotor.setPower(rightFrontY);
-            }
-            // Left stick, X to right, leftFronX turning backward
-            else if ((Math.abs(leftFrontY) < 0.5) && (leftFrontX < -0.5) && (Math.abs(rightFrontY) < 0.5) && (rightFrontX < -0.5))
-            {
-                robot.armMotor.setPower(leftFrontX);
-                robot.tableMotor.setPower(-leftFrontX);
-                robot.leftMotor.setPower(rightFrontX);
-                robot.rightMotor.setPower(-rightFrontX);
-            }
+                // Left stick, Y to front/back, turning forward/backward
+                if ((Math.abs(leftFrontY) > 0.5) && (Math.abs(leftFrontX) < 0.5) && (Math.abs(rightFrontY) > 0.5) && (Math.abs(rightFrontX) < 0.5)) {
+                    robot.armMotor.setPower(leftFrontY);
+                    robot.tableMotor.setPower(leftFrontY);
+                    robot.leftMotor.setPower(rightFrontY);
+                    robot.rightMotor.setPower(rightFrontY);
+                }
+                // Left stick, X to right, leftFronX turning backward
+                else if ((Math.abs(leftFrontY) < 0.5) && (leftFrontX < -0.5) && (Math.abs(rightFrontY) < 0.5) && (rightFrontX < -0.5)) {
+                    robot.armMotor.setPower(leftFrontX);
+                    robot.tableMotor.setPower(-leftFrontX);
+                    robot.leftMotor.setPower(rightFrontX);
+                    robot.rightMotor.setPower(-rightFrontX);
+                }
                 // Left stick, X to left, leftFronX turning forward
-            else if ((Math.abs(leftFrontY) < 0.5) && (leftFrontX > 0.5) && (Math.abs(rightFrontY) < 0.5) && (rightFrontX > 0.5))
-            {
-                robot.armMotor.setPower(leftFrontX);
-                robot.tableMotor.setPower(-leftFrontX);
-                robot.leftMotor.setPower(rightFrontX);
-                robot.rightMotor.setPower(-rightFrontX);
-            }
-            // Northeast Forward
-            else if ((leftFrontX > 0.5) && (leftFrontY < -0.5) && (rightFrontX > 0.5) && (rightFrontY < -0.5)){
-                robot.tableMotor.setPower(leftFrontY);
-                robot.rightMotor.setPower(rightFrontY);
-            }
-            // Northwest Forward
-            else if ((leftFrontX < -0.5) && (leftFrontY < -0.5) && (rightFrontX < -0.5) && (rightFrontY < -0.5)){
-                robot.armMotor.setPower(leftFrontY);
-                robot.leftMotor.setPower(rightFrontY);
-            }
-            // Southeast Backward
-            else if ((leftFrontX > 0.5) && (leftFrontY > 0.5) && (rightFrontX > 0.5) && (rightFrontY > 0.5)){
-                robot.armMotor.setPower(leftFrontY);
-                robot.leftMotor.setPower(rightFrontY);
-            }
-            // Southwest Backward
-            else if ((leftFrontX < -0.5) && (leftFrontY > 0.5) && (rightFrontX < -0.5) && (rightFrontY > 0.5)){
-                robot.tableMotor.setPower(leftFrontY);
-                robot.rightMotor.setPower(rightFrontY);
-            }
-            else if (topArmB){
-                robot.topArm.setPower(1.0);
-            }
-            else if (topArmX){
-                robot.topArm.setPower(1.0);
-            }
-            else if (bottomArmA){
-                robot.bottomArm.setPower(-0.5);
-            }
-            else if (bottomArmY){
-                robot.bottomArm.setPower(0.5);
-            }
-            else {
-                robot.armMotor.setPower(0.0);
-                robot.tableMotor.setPower(0.0);
-                robot.leftMotor.setPower(0.0);
-                robot.rightMotor.setPower(0.0);
-                robot.topArm.setPower(0.0);
-                robot.bottomArm.setPower(0.0);
-            }
+                else if ((Math.abs(leftFrontY) < 0.5) && (leftFrontX > 0.5) && (Math.abs(rightFrontY) < 0.5) && (rightFrontX > 0.5)) {
+                    robot.armMotor.setPower(leftFrontX);
+                    robot.tableMotor.setPower(-leftFrontX);
+                    robot.leftMotor.setPower(rightFrontX);
+                    robot.rightMotor.setPower(-rightFrontX);
+                }
+                // Northeast Forward
+                else if ((leftFrontX > 0.5) && (leftFrontY < -0.5) && (rightFrontX > 0.5) && (rightFrontY < -0.5)) {
+                    robot.tableMotor.setPower(leftFrontY);
+                    robot.rightMotor.setPower(rightFrontY);
+                }
+                // Northwest Forward
+                else if ((leftFrontX < -0.5) && (leftFrontY < -0.5) && (rightFrontX < -0.5) && (rightFrontY < -0.5)) {
+                    robot.armMotor.setPower(leftFrontY);
+                    robot.leftMotor.setPower(rightFrontY);
+                }
+                // Southeast Backward
+                else if ((leftFrontX > 0.5) && (leftFrontY > 0.5) && (rightFrontX > 0.5) && (rightFrontY > 0.5)) {
+                    robot.armMotor.setPower(leftFrontY);
+                    robot.leftMotor.setPower(rightFrontY);
+                }
+                // Southwest Backward
+                else if ((leftFrontX < -0.5) && (leftFrontY > 0.5) && (rightFrontX < -0.5) && (rightFrontY > 0.5)) {
+                    robot.tableMotor.setPower(leftFrontY);
+                    robot.rightMotor.setPower(rightFrontY);
+                } else if (topArmB) {
+                    robot.topArm.setPower(1.0);
+                } else if (topArmX) {
+                    robot.topArm.setPower(1.0);
+                } else if (bottomArmA) {
+                    robot.bottomArm.setPower(-0.5);
+                } else if (bottomArmY) {
+                    robot.bottomArm.setPower(0.5);
+                } else {
+                    robot.armMotor.setPower(0.0);
+                    robot.tableMotor.setPower(0.0);
+                    robot.leftMotor.setPower(0.0);
+                    robot.rightMotor.setPower(0.0);
+                    robot.topArm.setPower(0.0);
+                    robot.bottomArm.setPower(0.0);
+                }
 
-            // To see where joystick controller is and assign to correct value
+                // To see where joystick controller is and assign to correct value
             /*if ((Math.abs(leftFrontY) == 1.0) && (Math.abs(leftRearY) == 1.0)) {
                 //robot.armMotor.setPower(leftFrontY);
                 //robot.tableMotor.setPower(leftRearY);
@@ -266,7 +276,7 @@ public class BrainybotTeleopVision extends LinearOpMode {
             }*/
 
 
-            // Use gamepad left & right Bumpers to open and close the claw
+                // Use gamepad left & right Bumpers to open and close the claw
             /*if (gamepad1.right_bumper)
                 clawOffset += CLAW_SPEED;
             else if (gamepad1.left_bumper)
@@ -277,42 +287,59 @@ public class BrainybotTeleopVision extends LinearOpMode {
             robot.leftClaw.setPosition(robot.MID_SERVO + clawOffset);
             robot.rightClaw.setPosition(robot.MID_SERVO - clawOffset);
 */
-            // Use gamepad buttons to move arm up (Y) and down (A)
-            // if (gamepad1.y)
-            //     robot.armMotor.setPower(robot.ARM_UP_POWER);
-            // else if (gamepad1.a)
-            //     robot.armMotor.setPower(robot.ARM_DOWN_POWER);
-            // else
-            //     robot.armMotor.setPower(0.0);
+                // Use gamepad buttons to move arm up (Y) and down (A)
+                // if (gamepad1.y)
+                //     robot.armMotor.setPower(robot.ARM_UP_POWER);
+                // else if (gamepad1.a)
+                //     robot.armMotor.setPower(robot.ARM_DOWN_POWER);
+                // else
+                //     robot.armMotor.setPower(0.0);
 
-            // Use gamepad buttons to move left (X) and right (B)
-            // if (gamepad1.x)
-            //     robot.tableMotor.setPower(robot.TABLE_LEFT_POWER);
-            // else if (gamepad1.b)
-            //     robot.tableMotor.setPower(robot.TABLE_RIGHT_POWER);
-            // else
-            //     robot.tableMotor.setPower(0.0);
+                // Use gamepad buttons to move left (X) and right (B)
+                // if (gamepad1.x)
+                //     robot.tableMotor.setPower(robot.TABLE_LEFT_POWER);
+                // else if (gamepad1.b)
+                //     robot.tableMotor.setPower(robot.TABLE_RIGHT_POWER);
+                // else
+                //     robot.tableMotor.setPower(0.0);
+                // check the status of the x button .
+                bCurrState = gamepad1.x;
 
-            // Send telemetry message to signify robot running;
-            //telemetry.addData("claw",  "Offset = %.2f", clawOffset);
-            telemetry.addData("leftFrontY",  "%.2f", leftFrontY);
-            //telemetry.addData("rightFrontY", "%.2f", rightFrontY);
-            //telemetry.addData("leftRearY",  "%.2f", leftRearY);
-            //telemetry.addData("rightRearY", "%.2f", rightRearY);
-            telemetry.addData("leftFrontX",  "%.2f", leftFrontX);
-            //telemetry.addData("rightFrontX", "%.2f", rightFrontX);
-            //telemetry.addData("leftRearX",  "%.2f", leftRearX);
-            //telemetry.addData("rightRearX", "%.2f", rightRearX);
-            telemetry.addData("Tracking " + target.getName(), listener.isVisible());
-            telemetry.addData("Last Known Location", formatMatrix(lastKnownLocation));
+                // check for button state transitions.
+                if ((bCurrState == true) && (bCurrState != bPrevState)) {
 
-            telemetry.update();
+                    // button is transitioning to a pressed state.  Toggle LED
+                    bLedOn = !bLedOn;
+                    lightSensor.enableLed(bLedOn);
+                }
 
-            // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
-            robot.waitForTick(40);
+                // update previous state variable.
+                bPrevState = bCurrState;
 
+                // Send telemetry message to signify robot running;
+                //telemetry.addData("claw",  "Offset = %.2f", clawOffset);
+                telemetry.addData("leftFrontY", "%.2f", leftFrontY);
+                //telemetry.addData("rightFrontY", "%.2f", rightFrontY);
+                //telemetry.addData("leftRearY",  "%.2f", leftRearY);
+                //telemetry.addData("rightRearY", "%.2f", rightRearY);
+                telemetry.addData("leftFrontX", "%.2f", leftFrontX);
+                //telemetry.addData("rightFrontX", "%.2f", rightFrontX);
+                //telemetry.addData("leftRearX",  "%.2f", leftRearX);
+                //telemetry.addData("rightRearX", "%.2f", rightRearX);
+                telemetry.addData("Tracking " + target.getName(), listener.isVisible());
+                telemetry.addData("Last Known Location", formatMatrix(lastKnownLocation));
+                // send the info back to driver station using telemetry function.
+                telemetry.addData("LED", bLedOn ? "On" : "Off");
+                telemetry.addData("Raw", lightSensor.getRawLightDetected());
+                telemetry.addData("Normal", lightSensor.getLightDetected());
+
+                telemetry.update();
+
+                // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
+                robot.waitForTick(40);
+
+            }
         }
-    }
 
     public void setupVuforia()
     {
