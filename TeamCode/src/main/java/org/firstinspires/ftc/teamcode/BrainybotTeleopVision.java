@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
@@ -108,6 +109,9 @@ public class BrainybotTeleopVision extends LinearOpMode {
             boolean topArmB, topArmX;
             boolean bottomArmA, bottomArmY;
             double maxY, maxX;
+            double robotX = 0.0;
+            double robotY = 0.0;
+            double robotBearing = 0.0;
 
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
@@ -154,8 +158,24 @@ public class BrainybotTeleopVision extends LinearOpMode {
                 OpenGLMatrix latestLocation = listener.getUpdatedRobotLocation();
 
                 // The listener will sometimes return null, so we check for that to prevent errors
-                if (latestLocation != null)
+                if (latestLocation != null) {
                     lastKnownLocation = latestLocation;
+                    // Then you can extract the positions and angles using the getTranslation and getOrientation methods.
+                    VectorF  trans = lastKnownLocation.getTranslation();
+                    Orientation rot = Orientation.getOrientation(lastKnownLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+                    // Robot position is defined by the standard Matrix translation (x and y)
+                    robotX = trans.get(0);
+                    robotY = trans.get(1);
+
+                    // Robot bearing (in Cartesian system) position is defined by the standard Matrix z rotation
+                    robotBearing = rot.thirdAngle;
+                    if (robotBearing < 0) {
+                        robotBearing = 360 + robotBearing;
+                    }
+                }
+                else {
+                    telemetry.addData("Pos   ", "Unknown");
+                }
 
                 // Send information about whether the target is visible, and where the robot is
                 //telemetry.addData("Tracking " + target.getName(), listener.isVisible());
@@ -306,7 +326,7 @@ public class BrainybotTeleopVision extends LinearOpMode {
                 bCurrState = gamepad1.x;
 
                 // check for button state transitions.
-                if ((bCurrState == true) && (bCurrState != bPrevState)) {
+                if ((bCurrState) && (bCurrState != bPrevState)) {
 
                     // button is transitioning to a pressed state.  Toggle LED
                     bLedOn = !bLedOn;
@@ -332,6 +352,12 @@ public class BrainybotTeleopVision extends LinearOpMode {
                 telemetry.addData("LED", bLedOn ? "On" : "Off");
                 telemetry.addData("Raw", lightSensor.getRawLightDetected());
                 telemetry.addData("Normal", lightSensor.getLightDetected());
+
+                telemetry.addData("Pos X ", robotX);
+                telemetry.addData("Pos Y ", robotY);
+                telemetry.addData("Bear  ", robotBearing);
+                //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
+                telemetry.addData("Pos   ", formatMatrix(lastKnownLocation));
 
                 telemetry.update();
 
