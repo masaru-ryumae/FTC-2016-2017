@@ -34,6 +34,8 @@ public class HardwareBrainybot
     public Servo    rightClaw       = null;
     public DcMotor  topArm          = null;
     public DcMotor  bottomArm       = null;
+    public DcMotor  leftLadderArm       = null;
+    public DcMotor  rightLadderArm       = null;
 
     public static final double MID_SERVO       =  0.5 ;
     //public static final double ARM_UP_POWER    =  0.45 ;
@@ -65,12 +67,16 @@ public class HardwareBrainybot
         tableMotor      = hwMap.dcMotor.get("table_arm");
         topArm          = hwMap.dcMotor.get("top_arm");
         bottomArm       = hwMap.dcMotor.get("bottom_arm");
+        leftLadderArm   = hwMap.dcMotor.get("left_ladder_arm");
+        rightLadderArm  = hwMap.dcMotor.get("right_ladder_arm");
         leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         tableMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         armMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         topArm.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         bottomArm.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        leftLadderArm.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        rightLadderArm.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
 
         // Set all motors to zero power
         leftMotor.setPower(0);
@@ -79,6 +85,8 @@ public class HardwareBrainybot
         tableMotor.setPower(0);
         topArm.setPower(0);
         bottomArm.setPower(0);
+        leftLadderArm.setPower(0);
+        rightLadderArm.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
@@ -88,6 +96,8 @@ public class HardwareBrainybot
         tableMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         topArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bottomArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftLadderArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightLadderArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.
         leftClaw = hwMap.servo.get("left_hand");

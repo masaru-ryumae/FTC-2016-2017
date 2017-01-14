@@ -112,6 +112,7 @@ public class BrainybotTeleopVision extends LinearOpMode {
             double robotX = 0.0;
             double robotY = 0.0;
             double robotBearing = 0.0;
+            boolean leftLadder, rightLadder;
 
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
@@ -149,10 +150,13 @@ public class BrainybotTeleopVision extends LinearOpMode {
                 rightFrontX = -gamepad1.right_stick_x;
                 //rightRearX = -gamepad1.right_stick_x;
 
-                topArmB = gamepad2.b;
-                bottomArmA = gamepad2.a;
-                topArmX = gamepad2.x;
-                bottomArmY = gamepad2.y;
+                topArmB = gamepad1.b;
+                bottomArmA = gamepad1.a;
+                topArmX = gamepad1.x;
+                bottomArmY = gamepad1.y;
+                leftLadder = gamepad2.a;
+                rightLadder = gamepad2.y;
+
 
                 // Ask the listener for the latest information on where the robot is
                 OpenGLMatrix latestLocation = listener.getUpdatedRobotLocation();
@@ -255,10 +259,12 @@ public class BrainybotTeleopVision extends LinearOpMode {
                 else if ((leftFrontX < -0.5) && (leftFrontY > 0.5) && (rightFrontX < -0.5) && (rightFrontY > 0.5)) {
                     robot.tableMotor.setPower(leftFrontY);
                     robot.rightMotor.setPower(rightFrontY);
-                } else if (topArmB) {
-                    robot.topArm.setPower(1.0);
-                } else if (topArmX) {
-                    robot.topArm.setPower(1.0);
+                } else if (leftLadder) {
+                    robot.leftLadderArm.setPower(-1.0);
+                    robot.rightLadderArm.setPower(-1.0);
+                } else if (rightLadder) {
+                    robot.leftLadderArm.setPower(1.0);
+                    robot.rightLadderArm.setPower(1.0);
                 } else if (bottomArmA) {
                     robot.bottomArm.setPower(-0.5);
                 } else if (bottomArmY) {
@@ -270,58 +276,10 @@ public class BrainybotTeleopVision extends LinearOpMode {
                     robot.rightMotor.setPower(0.0);
                     robot.topArm.setPower(0.0);
                     robot.bottomArm.setPower(0.0);
+                    robot.leftLadderArm.setPower(0.0);
+                    robot.rightLadderArm.setPower(0.0);
                 }
 
-                // To see where joystick controller is and assign to correct value
-            /*if ((Math.abs(leftFrontY) == 1.0) && (Math.abs(leftRearY) == 1.0)) {
-                //robot.armMotor.setPower(leftFrontY);
-                //robot.tableMotor.setPower(leftRearY);
-                telemetry.addData("in if",  "%.2f", leftFrontY);
-            }*/
-
-            /*if(Math.abs(leftFrontY) > Math.abs(leftFrontX)) {
-                robot.armMotor.setPower(leftFrontY);
-            }
-
-            else if(Math.abs(leftRearY) > Math.abs(leftRearX)) {
-                robot.tableMotor.setPower(leftRearY);
-            }
-
-            else if(Math.abs(leftFrontX) > Math.abs(leftFrontY)) {
-                robot.armMotor.setPower(leftFrontX);
-            }
-
-            else if(Math.abs(leftRearX) > Math.abs(leftRearY)) {
-                robot.tableMotor.setPower(leftRearX);
-            }*/
-
-
-                // Use gamepad left & right Bumpers to open and close the claw
-            /*if (gamepad1.right_bumper)
-                clawOffset += CLAW_SPEED;
-            else if (gamepad1.left_bumper)
-                clawOffset -= CLAW_SPEED;
-
-            // Move both servos to new position.  Assume servos are mirror image of each other.
-            clawOffset = Range.clip(clawOffset, -0.5, 0.5);
-            robot.leftClaw.setPosition(robot.MID_SERVO + clawOffset);
-            robot.rightClaw.setPosition(robot.MID_SERVO - clawOffset);
-*/
-                // Use gamepad buttons to move arm up (Y) and down (A)
-                // if (gamepad1.y)
-                //     robot.armMotor.setPower(robot.ARM_UP_POWER);
-                // else if (gamepad1.a)
-                //     robot.armMotor.setPower(robot.ARM_DOWN_POWER);
-                // else
-                //     robot.armMotor.setPower(0.0);
-
-                // Use gamepad buttons to move left (X) and right (B)
-                // if (gamepad1.x)
-                //     robot.tableMotor.setPower(robot.TABLE_LEFT_POWER);
-                // else if (gamepad1.b)
-                //     robot.tableMotor.setPower(robot.TABLE_RIGHT_POWER);
-                // else
-                //     robot.tableMotor.setPower(0.0);
                 // check the status of the x button .
                 bCurrState = gamepad1.x;
 
