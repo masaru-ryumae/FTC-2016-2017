@@ -53,7 +53,7 @@ public class OpticalDistanceStraightTest extends LinearOpMode {
   HardwareBrainybot robot           = new HardwareBrainybot();
   private ElapsedTime runtime = new ElapsedTime();
 
-  static final double     FORWARD_SPEED = -0.3;
+  static final double     FORWARD_SPEED = -0.1;
   static final double     SLOWER_FORWARD_SPEED = -0.3;
 
   @Override
@@ -71,7 +71,7 @@ public class OpticalDistanceStraightTest extends LinearOpMode {
     // wait for the start button to be pressed.
     waitForStart();
 
-    // Go forward for 2 sec
+    // Go forward (until the distance is close)
     robot.armMotor.setPower(FORWARD_SPEED);
     robot.tableMotor.setPower(FORWARD_SPEED);
     robot.leftMotor.setPower(FORWARD_SPEED);
@@ -85,7 +85,7 @@ public class OpticalDistanceStraightTest extends LinearOpMode {
       telemetry.addData("Raw",    odsSensor.getRawLightDetected());
       telemetry.addData("Normal", odsSensor.getLightDetected());
 
-      if (odsSensor.getLightDetected() > 0.08) {
+      if (odsSensor.getLightDetected() > 0.03) {
         robot.armMotor.setPower(0.0);
         robot.tableMotor.setPower(0.0);
         robot.leftMotor.setPower(0.0);
