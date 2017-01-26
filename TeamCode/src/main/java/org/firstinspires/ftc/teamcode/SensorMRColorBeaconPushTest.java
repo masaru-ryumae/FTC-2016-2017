@@ -65,6 +65,7 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
   OpticalDistanceSensor odsSensor;  // Hardware Device Object
 
   static final double     FORWARD_SPEED = -0.1;
+  boolean buttonPushed = false;
 
 
   @Override
@@ -89,6 +90,9 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
 
     // get a reference to our ColorSensor object.
     colorSensor = hardwareMap.colorSensor.get("color sensor");
+
+    // get a reference to our Distance Sensor object.
+    odsSensor = hardwareMap.opticalDistanceSensor.get("ods");
 
     // Set the LED in the beginning
     colorSensor.enableLed(bLedOn);
@@ -141,24 +145,50 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
         }
       });
 
+      // send the info back to driver station using telemetry function.
+      telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
+      telemetry.addData("ODS Normal", odsSensor.getLightDetected());
+      telemetry.addData("Button Pushed?", buttonPushed);
+      telemetry.update();
+
+      ////////////////////////////////////////
+      // HERE STARTS THE ROBOT MOVE CODE!!
+      // Go forward (until the distance is close)
+      robot.armMotor.setPower(FORWARD_SPEED);
+      robot.tableMotor.setPower(FORWARD_SPEED);
+      robot.leftMotor.setPower(FORWARD_SPEED);
+      robot.rightMotor.setPower(FORWARD_SPEED);
+
+      // STOP to recognize color.
+      if (odsSensor.getLightDetected() > 0.04) {
+        robot.armMotor.setPower(0.0);
+        robot.tableMotor.setPower(0.0);
+        robot.leftMotor.setPower(0.0);
+        robot.rightMotor.setPower(0.0);
+      }
+
       // THIS IS FOR RED ALLIANCE, If the button is red, then push, otherwise, slide and push.
 
-      if ((colorSensor.red() >= 3) && (colorSensor.blue() == 0)) {
+
+      if ((colorSensor.red() >= 3) && (colorSensor.blue() == 0) && (buttonPushed == false)) {
         // RED detected, go forward a bit 0.1 sec to press the button
         robot.armMotor.setPower(FORWARD_SPEED);
         robot.tableMotor.setPower(FORWARD_SPEED);
         robot.leftMotor.setPower(FORWARD_SPEED);
         robot.rightMotor.setPower(FORWARD_SPEED);
 
-        if (odsSensor.getLightDetected() > 0.09) {
+        if (odsSensor.getLightDetected() > 0.04) {
           robot.armMotor.setPower(0.0);
           robot.tableMotor.setPower(0.0);
           robot.leftMotor.setPower(0.0);
           robot.rightMotor.setPower(0.0);
+
         }
+        buttonPushed = true;
 
       }
-      else if ((colorSensor.blue() >= 3) && (hsvValues[0] > 100) && (colorSensor.red() == 0)) {
+      else if ((colorSensor.blue() >= 3) && (hsvValues[0] > 100) && (colorSensor.red() == 0)
+              && (buttonPushed == false)) {
         // BLUE detected, slide and push the button
         robot.armMotor.setPower(-0.5);
         robot.tableMotor.setPower(0.5);
@@ -183,16 +213,32 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
         robot.leftMotor.setPower(FORWARD_SPEED);
         robot.rightMotor.setPower(FORWARD_SPEED);
 
-        if (odsSensor.getLightDetected() > 0.09) {
+        if (odsSensor.getLightDetected() > 0.04) {
           robot.armMotor.setPower(0.0);
           robot.tableMotor.setPower(0.0);
           robot.leftMotor.setPower(0.0);
           robot.rightMotor.setPower(0.0);
         }
-
+        buttonPushed = true;
+      }
+      else {
+        // Stop
+        robot.armMotor.setPower(0);
+        robot.tableMotor.setPower(0);
+        robot.leftMotor.setPower(0);
+        robot.rightMotor.setPower(0);
       }
 
-
+      // Go backward after pressing the button
+      robot.armMotor.setPower(-FORWARD_SPEED);
+      robot.tableMotor.setPower(-FORWARD_SPEED);
+      robot.leftMotor.setPower(-FORWARD_SPEED);
+      robot.rightMotor.setPower(-FORWARD_SPEED);
+      while (opModeIsActive() && (runtime.seconds() < 1.0)) {
+        telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+        telemetry.update();
+        idle();
+      }
       // Stop
       robot.armMotor.setPower(0);
       robot.tableMotor.setPower(0);
