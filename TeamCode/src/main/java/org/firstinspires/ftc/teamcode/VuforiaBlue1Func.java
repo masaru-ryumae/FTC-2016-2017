@@ -219,7 +219,7 @@ public class VuforiaBlue1Func extends LinearOpMode
         goStop();
     }
 
-    public void turnRight(double speed)
+    public void turnRight(double speed) throws InterruptedException
     {
         // This function allows robot to turn right with speed, time duration argument.
         robot.armMotor.setPower(speed);
