@@ -86,7 +86,7 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
     boolean bCurrState = false;
 
     // bLedOn represents the state of the LED.
-    boolean bLedOn = true;
+    boolean bLedOn = false;
 
     // get a reference to our ColorSensor object.
     colorSensor = hardwareMap.colorSensor.get("color sensor");
@@ -103,24 +103,155 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
     telemetry.addData("Status", "Hello Brainy Bots. Ready to run!");    //
     telemetry.update();
 
+    // After Init is pressed, this keeps updating the light values
+    while (!(isStarted() || isStopRequested())) {
+        telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
+        telemetry.update();
+        idle();
+    }
 
     // wait for the start button to be pressed.
     waitForStart();
 
+    // START: First staright move close to the button where it can recognize color
+      robot.armMotor.setPower(FORWARD_SPEED);
+      robot.tableMotor.setPower(FORWARD_SPEED);
+      robot.leftMotor.setPower(FORWARD_SPEED);
+      robot.rightMotor.setPower(FORWARD_SPEED);
+
+      while (opModeIsActive() && (odsSensor.getRawLightDetected() < 0.15)) { // GOOD to stop close to recognize color
+          //while (odsSensor.getRawLightDetected() < 0.1) {
+          telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
+          telemetry.addData("Status", "In first while loop");
+          telemetry.update();
+          //sleep(10000);
+
+      }
+
+      // STOP to recognize color.
+      // GOOD, without these stop, the robot does not stop from above.
+      robot.armMotor.setPower(0.0);
+      robot.tableMotor.setPower(0.0);
+      robot.leftMotor.setPower(0.0);
+      robot.rightMotor.setPower(0.0);
+      telemetry.addData("Status", "FIRST stop");
+      telemetry.addData("Red  ", colorSensor.red());
+      telemetry.addData("Blue ", colorSensor.blue());
+      telemetry.update();
+      sleep(5000);
+      // END: First staright move close to the button where it can recognize color
+
+      // START: Recognize Color
+      if ((colorSensor.red() >= 3) && (colorSensor.blue() == 0) &&
+              (buttonPushed == false)) {
+          telemetry.addData("Status", "RED DETECTED");
+          telemetry.update();
+          sleep(5000);
+      }
+      else {
+          telemetry.addData("Status", "RED NOT DETECTED");
+          telemetry.update();
+          sleep(5000);
+      }
+      // END: Recognize Color
+/*
+      robot.armMotor.setPower(FORWARD_SPEED);
+      robot.tableMotor.setPower(FORWARD_SPEED);
+      robot.leftMotor.setPower(FORWARD_SPEED);
+      robot.rightMotor.setPower(FORWARD_SPEED);
+
+
+      while (opModeIsActive() && (odsSensor.getRawLightDetected() < 0.2)) { // GOOD to stop close to recognize color
+          //while (odsSensor.getRawLightDetected() < 0.1) {
+          telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
+
+          telemetry.addData("Status", "In 2nd while loop");
+          telemetry.update();
+          //sleep(10000);
+
+      }
+
+      robot.armMotor.setPower(0.0);
+      robot.tableMotor.setPower(0.0);
+      robot.leftMotor.setPower(0.0);
+      robot.rightMotor.setPower(0.0);
+      telemetry.addData("Status", "2nd stop");
+      sleep(5000);
+*/
+
+      /* BAD CODE - ROBOT DOES NOT STOP AT ALL, NO REFRESH OF SCREEN!!
+      while (odsSensor.getRawLightDetected() < 0.24) {
+          robot.armMotor.setPower(FORWARD_SPEED);
+          robot.tableMotor.setPower(FORWARD_SPEED);
+          robot.leftMotor.setPower(FORWARD_SPEED);
+          robot.rightMotor.setPower(FORWARD_SPEED);
+
+      }
+
+      // STOP to recognize color.
+      //robot.armMotor.setPower(0.0);
+      //robot.tableMotor.setPower(0.0);
+      //robot.leftMotor.setPower(0.0);
+      //robot.rightMotor.setPower(0.0);
+      telemetry.addData("Status", "Before 10 sec sleep");
+      //telemetry.update();
+      sleep(10000);
+      telemetry.addData("Status", "after 10 sec sleep");
+      //telemetry.update();
+      */
+
+      ////////////////////////////////////////
+      // HERE STARTS THE ROBOT MOVE CODE!!
+      // Go forward (until the distance is close)
+
+      /*
+      while (odsSensor.getLightDetected() < 0.04) {
+          robot.armMotor.setPower(FORWARD_SPEED);
+          robot.tableMotor.setPower(FORWARD_SPEED);
+          robot.leftMotor.setPower(FORWARD_SPEED);
+          robot.rightMotor.setPower(FORWARD_SPEED);
+      }
+      */
+      ;
+      /*
+      // STOP to recognize color.
+      runtime.reset();
+      while (opModeIsActive() && (odsSensor.getLightDetected() > 0.04)) {
+          telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+          telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
+          telemetry.addData("ODS Normal", odsSensor.getLightDetected());
+
+          robot.armMotor.setPower(0.0);
+          robot.tableMotor.setPower(0.0);
+          robot.leftMotor.setPower(0.0);
+          robot.rightMotor.setPower(0.0);
+
+          telemetry.update();
+          idle();
+      }
+      */
+      /*
+      if (odsSensor.getLightDetected() > 0.04) {
+          robot.armMotor.setPower(0.0);
+          robot.tableMotor.setPower(0.0);
+          robot.leftMotor.setPower(0.0);
+          robot.rightMotor.setPower(0.0);
+      }
+        */
     // while the op mode is active, loop and read the RGB data.
     // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
     while (opModeIsActive()) {
 
       // check the status of the x button on either gamepad.
-      bCurrState = gamepad1.x;
+      //bCurrState = gamepad1.x;
 
       // check for button state transitions.
-      if ((bCurrState == true) && (bCurrState != bPrevState))  {
+      //if ((bCurrState == true) && (bCurrState != bPrevState))  {
 
         // button is transitioning to a pressed state. So Toggle LED
-        bLedOn = !bLedOn;
-        colorSensor.enableLed(bLedOn);
-      }
+        //bLedOn = !bLedOn;
+        //colorSensor.enableLed(bLedOn);
+      //}
 
       // update previous state variable.
       bPrevState = bCurrState;
@@ -149,33 +280,105 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
       telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
       telemetry.addData("ODS Normal", odsSensor.getLightDetected());
       telemetry.addData("Button Pushed?", buttonPushed);
-      telemetry.update();
+      telemetry.update(); // THIS CODE GOOD, so all values are on screen
 
       ////////////////////////////////////////
       // HERE STARTS THE ROBOT MOVE CODE!!
       // Go forward (until the distance is close)
-      robot.armMotor.setPower(FORWARD_SPEED);
-      robot.tableMotor.setPower(FORWARD_SPEED);
-      robot.leftMotor.setPower(FORWARD_SPEED);
-      robot.rightMotor.setPower(FORWARD_SPEED);
 
-      // STOP to recognize color.
-      if (odsSensor.getLightDetected() > 0.04) {
+        // THIS CODE STOPS, but it doesn't update screen until object goes away, then get close.
+        // Then screen updates.
+
+/*
+       robot.armMotor.setPower(FORWARD_SPEED);
+       robot.tableMotor.setPower(FORWARD_SPEED);
+       robot.leftMotor.setPower(FORWARD_SPEED);
+       robot.rightMotor.setPower(FORWARD_SPEED);
+
+
+        while (opModeIsActive() && (odsSensor.getRawLightDetected() < 0.24)) { // GOOD to stop close to recognize color
+        //while (odsSensor.getRawLightDetected() < 0.1) {
+            telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
+
+            telemetry.addData("Status", "In first while loop");
+            telemetry.update();
+                //sleep(10000);
+
+            }
+
+
+        // STOP to recognize color.
+        // GOOD, without these stop, the robot does not stop from above.
         robot.armMotor.setPower(0.0);
         robot.tableMotor.setPower(0.0);
         robot.leftMotor.setPower(0.0);
         robot.rightMotor.setPower(0.0);
-      }
+        telemetry.addData("Status", "FIRST stop");
+*/
+        /*
+        // 2nd step to get closer
+        while ((odsSensor.getRawLightDetected() >= 0.1) && (odsSensor.getRawLightDetected() < 0.5)) {
+            robot.armMotor.setPower(FORWARD_SPEED);
+            robot.tableMotor.setPower(FORWARD_SPEED);
+            robot.leftMotor.setPower(FORWARD_SPEED);
+            robot.rightMotor.setPower(FORWARD_SPEED);
+            telemetry.addData("Status", "In 2nd while loop");
+            sleep(10000);
 
-      // THIS IS FOR RED ALLIANCE, If the button is red, then push, otherwise, slide and push.
+
+        }
 
 
-      if ((colorSensor.red() >= 3) && (colorSensor.blue() == 0) && (buttonPushed == false)) {
-        // RED detected, go forward a bit 0.1 sec to press the button
-        robot.armMotor.setPower(FORWARD_SPEED);
-        robot.tableMotor.setPower(FORWARD_SPEED);
-        robot.leftMotor.setPower(FORWARD_SPEED);
-        robot.rightMotor.setPower(FORWARD_SPEED);
+        robot.armMotor.setPower(0.0);
+        robot.tableMotor.setPower(0.0);
+        robot.leftMotor.setPower(0.0);
+        robot.rightMotor.setPower(0.0);
+        telemetry.addData("Status", "2nd STOP");
+        */
+
+
+
+        /*
+        // GOOD CODE, detects RED!
+        if ((colorSensor.red() >= 3) && (colorSensor.blue() == 0) && (buttonPushed == false)) {
+            telemetry.addData("Status", "RED DETECTED");
+            sleep(5000);
+        }
+        else
+            telemetry.addData("Status", "RED NOT DETECTED");
+        */
+        //telemetry.addData("Status", "Before 10 sec sleep");
+        //telemetry.update();
+        //sleep(10000);
+        //telemetry.addData("Status", "after 10 sec sleep");
+        //telemetry.update();
+
+        /*
+        if ((colorSensor.red() >= 3) && (colorSensor.blue() == 0) && (buttonPushed == false)) {
+            // RED detected, go forward a bit 0.1 sec to press the button
+            //while ((odsSensor.getRawLightDetected() >= 0.24) && (odsSensor.getRawLightDetected() < 0.80)) {
+            telemetry.addData("Status", "In if ");
+
+            while (odsSensor.getRawLightDetected() < 0.80) {
+                robot.armMotor.setPower(FORWARD_SPEED);
+                robot.tableMotor.setPower(FORWARD_SPEED);
+                robot.leftMotor.setPower(FORWARD_SPEED);
+                robot.rightMotor.setPower(FORWARD_SPEED);
+                telemetry.addData("Status", "In if while loop");
+                //telemetry.update();
+
+            }
+
+            // STOP to recognize color.
+            robot.armMotor.setPower(0.0);
+            robot.tableMotor.setPower(0.0);
+            robot.leftMotor.setPower(0.0);
+            robot.rightMotor.setPower(0.0);
+            /*
+            robot.armMotor.setPower(FORWARD_SPEED);
+            robot.tableMotor.setPower(FORWARD_SPEED);
+            robot.leftMotor.setPower(FORWARD_SPEED);
+            robot.rightMotor.setPower(FORWARD_SPEED);
 
         if (odsSensor.getLightDetected() > 0.04) {
           robot.armMotor.setPower(0.0);
@@ -184,18 +387,23 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
           robot.rightMotor.setPower(0.0);
 
         }
-        buttonPushed = true;
+            buttonPushed = true;
+            //telemetry.update();
+            //sleep(20000);
 
       }
+        telemetry.addData("Status", "OUT if while loop");
+        */
+        /*
       else if ((colorSensor.blue() >= 3) && (hsvValues[0] > 100) && (colorSensor.red() == 0)
               && (buttonPushed == false)) {
         // BLUE detected, slide and push the button
-        robot.armMotor.setPower(-0.5);
-        robot.tableMotor.setPower(0.5);
-        robot.leftMotor.setPower(-0.5);
-        robot.rightMotor.setPower(0.5);
+        robot.armMotor.setPower(0.5);
+        robot.tableMotor.setPower(-0.5);
+        robot.leftMotor.setPower(0.5);
+        robot.rightMotor.setPower(-0.5);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
+        while (opModeIsActive() && (runtime.seconds() < 0.6)) {
           telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
           telemetry.update();
           idle();
@@ -213,22 +421,31 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
         robot.leftMotor.setPower(FORWARD_SPEED);
         robot.rightMotor.setPower(FORWARD_SPEED);
 
-        if (odsSensor.getLightDetected() > 0.04) {
+        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
+          telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+          telemetry.update();
+          idle();
+        }
+
+        if (odsSensor.getRawLightDetected() > 0.04) {
           robot.armMotor.setPower(0.0);
           robot.tableMotor.setPower(0.0);
           robot.leftMotor.setPower(0.0);
           robot.rightMotor.setPower(0.0);
         }
+
         buttonPushed = true;
       }
-      else {
+        */
+      /*else {
         // Stop
         robot.armMotor.setPower(0);
         robot.tableMotor.setPower(0);
         robot.leftMotor.setPower(0);
         robot.rightMotor.setPower(0);
-      }
+      }*/
 
+      /*
       // Go backward after pressing the button
       robot.armMotor.setPower(-FORWARD_SPEED);
       robot.tableMotor.setPower(-FORWARD_SPEED);
@@ -244,6 +461,7 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
       robot.tableMotor.setPower(0);
       robot.leftMotor.setPower(0);
       robot.rightMotor.setPower(0);
+        */
 
 
       telemetry.update();
