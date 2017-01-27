@@ -147,6 +147,29 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
           telemetry.addData("Status", "RED DETECTED");
           telemetry.update();
           sleep(5000);
+          // START: Bump the button!!
+          robot.armMotor.setPower(FORWARD_SPEED);
+          robot.tableMotor.setPower(FORWARD_SPEED);
+          robot.leftMotor.setPower(FORWARD_SPEED);
+          robot.rightMotor.setPower(FORWARD_SPEED);
+
+          // 0.40 is about hitting the button on beacon
+          while (opModeIsActive() && (odsSensor.getRawLightDetected() < 0.40)) { // GOOD to stop close to recognize color
+              //while (odsSensor.getRawLightDetected() < 0.1) {
+              telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
+              //telemetry.addData("Status", "In first while loop");
+              telemetry.update();
+              //sleep(10000);
+
+          }
+
+          // STOP to recognize color.
+          // GOOD, without these stop, the robot does not stop from above.
+          robot.armMotor.setPower(0.0);
+          robot.tableMotor.setPower(0.0);
+          robot.leftMotor.setPower(0.0);
+          robot.rightMotor.setPower(0.0);
+          // END: Bump the button!!
       }
       else {
           telemetry.addData("Status", "RED NOT DETECTED");
