@@ -68,7 +68,8 @@ public class VuforiaBlue1Func extends LinearOpMode
         visionTargets.activate();
 
         // Go forward for * sec
-        goForward(FORWARD_SPEED);
+        goForward(FORWARD_SPEED, 1.2);
+        /*
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 1.2)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
@@ -76,7 +77,7 @@ public class VuforiaBlue1Func extends LinearOpMode
             idle();
         }
         goStop();
-
+        */
 
         // Turn right 45 degrees for * sec
         turnRight(FORWARD_SPEED);
@@ -93,7 +94,8 @@ public class VuforiaBlue1Func extends LinearOpMode
         goStop();
 
         // Go forward for * sec
-        goForward(FORWARD_SPEED);
+        goForward(FORWARD_SPEED, 1.5);
+        /*
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 1.5)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
@@ -101,9 +103,11 @@ public class VuforiaBlue1Func extends LinearOpMode
             idle();
         }
         goStop();
+        */
 
         // Go backward for 1 sec
-        goForward(-SLOWER_FORWARD_SPEED);
+        goForward(-SLOWER_FORWARD_SPEED, 0.7);
+        /*
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 0.7)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
@@ -111,7 +115,7 @@ public class VuforiaBlue1Func extends LinearOpMode
             idle();
         }
         goStop();
-
+        */
         // Turn right 45 degrees for 2 sec
         turnRight(SLOWER_FORWARD_SPEED);
         runtime.reset();
@@ -196,7 +200,7 @@ public class VuforiaBlue1Func extends LinearOpMode
         robot.rightMotor.setPower(0);
     }
 
-    public void goForward(double speed)
+    public void goForward(double speed, double duration) throws InterruptedException
     {
         // This function allows robot to go forward with speed, time duration argument.
 
@@ -205,14 +209,14 @@ public class VuforiaBlue1Func extends LinearOpMode
         robot.leftMotor.setPower(speed);
         robot.rightMotor.setPower(speed);
         //runtime.reset();
-        //while (opModeIsActive() && (runtime.seconds() < duration)) {
-        //    telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
-        //    telemetry.update();
-        //    idle();
-        //}
+        while (opModeIsActive() && (runtime.seconds() < duration)) {
+            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+            telemetry.update();
+            idle();
+        }
 
         // Stop
-        //goStop();
+        goStop();
     }
 
     public void turnRight(double speed)
