@@ -92,6 +92,7 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
 
     static final double SLIDE_SPEED = -0.5; // SLIDE_SPEED always Negative value
     static final double FORWARD_SPEED = -0.1;
+    static final double SLOWER_FORWARD_SPEED = -0.3;
     static final double ROTATE_SPEED = -0.1;
 
     static final double WHITE_THRESHOLD = 0.2;  // spans between 0.1 - 0.5 from dark to light
@@ -230,11 +231,34 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
       // telemetry.addData("Tracking " + target.getName(), listener.isVisible());
       sleep(10000);
 
+      /////////////////
+      /// Includes to start from the beginning at the wall
+      // Go forward
+      goForward(FORWARD_SPEED, 1.2);
+
+      // Turn right
+      turnRight(FORWARD_SPEED, 1.2);
+
+      // Go forward
+      goForward(FORWARD_SPEED, 1.5);
+
+      // Go backward
+      goForward(-SLOWER_FORWARD_SPEED, 0.7);
+
+      // Turn right
+      turnRight(SLOWER_FORWARD_SPEED, 0.8);
+
+      /////////
+      ////////
+      /////////
+
       // First, rotate.
       telemetry.addData("Status", "rotating to Left!");
       telemetry.update();
       sleep(5000);
 
+      // If robotZ > WHEELS_Z, then rotateLeft
+      // else rotateRight
       //////////////
       // START Z MOVE
       /////////////
@@ -873,22 +897,22 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
         goStop();
     }
 
-    public void turnRight(double speed) throws InterruptedException
+    public void turnRight(double speed, double duration) throws InterruptedException
     {
         // This function allows robot to turn right with speed, time duration argument.
         robot.armMotor.setPower(speed);
         robot.tableMotor.setPower(speed);
         //robot.leftMotor.setPower(speed);
         //robot.rightMotor.setPower(speed);
-        //runtime.reset();
-        //while (opModeIsActive() && (runtime.seconds() < 1.2)) {
-        //    telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
-        //    telemetry.update();
-        //    idle();
-        //}
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 1.2)) {
+            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+            telemetry.update();
+            idle();
+        }
 
         // Stop
-        //goStop();
+        goStop();
     }
 
     public void slideRight(double speed, double duration) throws InterruptedException
