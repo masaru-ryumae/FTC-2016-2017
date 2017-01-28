@@ -37,7 +37,8 @@ public class HardwareBrainybot
     public DcMotor  leftLadderArm       = null;
     public DcMotor  rightLadderArm       = null;
 
-    public static final double MID_SERVO       =  0.5 ;
+    //public static final double MID_SERVO       =  0.5; //original
+    public static final double MID_SERVO       =  0.3 ;
     //public static final double ARM_UP_POWER    =  0.45 ;
     //public static final double ARM_DOWN_POWER  = -0.45 ;
     public static final double ARM_UP_POWER    =  1.0 ;
@@ -101,9 +102,9 @@ public class HardwareBrainybot
 
         // Define and initialize ALL installed servos.
         leftClaw = hwMap.servo.get("left_hand");
-        rightClaw = hwMap.servo.get("right_hand");
-        leftClaw.setPosition(MID_SERVO);
-        rightClaw.setPosition(MID_SERVO);
+        //rightClaw = hwMap.servo.get("right_hand");
+        //leftClaw.setPosition(MID_SERVO);
+        //rightClaw.setPosition(MID_SERVO);
     }
 
     /***

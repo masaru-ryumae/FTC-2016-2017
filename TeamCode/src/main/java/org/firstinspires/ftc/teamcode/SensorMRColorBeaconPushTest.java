@@ -41,6 +41,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.LightSensor;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -87,10 +88,13 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
     HardwareBrainybot robot           = new HardwareBrainybot();
     private ElapsedTime runtime = new ElapsedTime();
     OpticalDistanceSensor odsSensor;  // Hardware Device Object
+    LightSensor lightSensor;
 
     static final double SLIDE_SPEED = -0.5; // SLIDE_SPEED always Negative value
     static final double FORWARD_SPEED = -0.1;
     static final double ROTATE_SPEED = -0.1;
+
+    static final double WHITE_THRESHOLD = 0.2;  // spans between 0.1 - 0.5 from dark to light
 
     //static final double WHEELS_X = 472.1;
     static final double WHEELS_X = 800.1;
@@ -138,9 +142,14 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
     // get a reference to our Distance Sensor object.
     odsSensor = hardwareMap.opticalDistanceSensor.get("ods");
 
+    lightSensor = hardwareMap.lightSensor.get("light sensor");
+
     // Set the LED in the beginning
     colorSensor.enableLed(bLedOn);
       odsSensor.enableLed(false);
+
+    // turn on LED of light sensor.
+    lightSensor.enableLed(true);
 
     robot.init(hardwareMap);
 
@@ -176,10 +185,12 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
         }
 
         telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
+        telemetry.addData("Light Level", lightSensor.getLightDetected());
         telemetry.addData("robotX",   robotX);
         telemetry.addData("robotY   ",   robotY);
         telemetry.addData("Bear  ", robotBearing);
         telemetry.addData("Pos   ", formatMatrix(lastKnownLocation));
+        telemetry.addData("Tracking " + target.getName(), listener.isVisible());
         telemetry.update();
         idle();
     }
@@ -196,6 +207,82 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
       telemetry.update();
       sleep(5000);
 
+      telemetry.addData("Status",   "Testing NXT Light Sensor");
+      telemetry.update();
+      sleep(5000);
+
+
+      //// TEST LIGHT SENSOR MOVE HERE!
+      // if robotY < WHEELS_Y, then slideRight, while, stop
+      // else slideLeft, while // STOP
+      // May need failsafe
+      goForward(FORWARD_SPEED, 5.0);
+      while (opModeIsActive() && (lightSensor.getLightDetected() < WHITE_THRESHOLD)) {
+
+          // Display the light level while we are looking for the line
+          telemetry.addData("Light Level",  lightSensor.getLightDetected());
+          telemetry.update();
+          idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
+      }
+      goStop();
+
+
+      // telemetry.addData("Tracking " + target.getName(), listener.isVisible());
+      sleep(10000);
+
+      // First, rotate.
+      telemetry.addData("Status", "rotating to Left!");
+      telemetry.update();
+      sleep(5000);
+
+      //////////////
+      // START Z MOVE
+      /////////////
+      // CASE: rotateLeft to image
+      robot.armMotor.setPower(-ROTATE_SPEED);
+      robot.tableMotor.setPower(-ROTATE_SPEED);
+      robot.leftMotor.setPower(ROTATE_SPEED);
+      robot.rightMotor.setPower(ROTATE_SPEED);
+      while (opModeIsActive() && (robotBearing < WHEELS_Z)) { // GOOD to stop close to recognize color
+          // Ask the listener for the latest information on where the robot is
+          OpenGLMatrix latestLocation = listener.getUpdatedRobotLocation();
+
+          if (latestLocation != null) {
+              lastKnownLocation = latestLocation;
+              // Then you can extract the positions and angles using the getTranslation and getOrientation methods.
+              VectorF trans = lastKnownLocation.getTranslation();
+              Orientation rot = Orientation.getOrientation(lastKnownLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+              // Robot position is defined by the standard Matrix translation (x and y)
+              robotX = trans.get(0);
+              robotY = trans.get(1);
+
+              // Robot bearing (in Cartesian system) position is defined by the standard Matrix z rotation
+              robotBearing = rot.thirdAngle;
+              if (robotBearing < 0) {
+                  robotBearing = 360 + robotBearing;
+              }
+          }
+          else {
+              telemetry.addData("Pos   ", "Unknown");
+          }
+
+          telemetry.addData("RobotX", robotX);
+          telemetry.addData("RobotY ",   robotY);
+          telemetry.addData("Bear  ", robotBearing);
+          telemetry.addData("Pos   ", formatMatrix(lastKnownLocation));
+          telemetry.addData("Status", "In robotBearing while loop");
+          telemetry.update();
+          idle();
+          //sleep(10000);
+
+      }
+
+      goStop();
+      //////////////
+      // END Z MOVE
+      /////////////
+
+      // Second, goForward closer to the beacon.
       //////////////
       // START X MOVE
       /////////////
@@ -247,7 +334,9 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
       telemetry.addData("Status", "Sliding to Left!");
       telemetry.update();
       sleep(5000);
+      // Third, then do the line stop.
 
+      /*
       //////////////
       // START Y MOVE
       /////////////
@@ -348,8 +437,10 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
       //////////////
       // END Z MOVE
       /////////////
+      */
 
 
+      // Change to Distance Sensor
       telemetry.addData("Status", "Switching to Distance Sensor!");
       telemetry.update();
       sleep(5000);

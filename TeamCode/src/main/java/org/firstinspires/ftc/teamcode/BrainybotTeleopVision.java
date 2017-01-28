@@ -112,7 +112,7 @@ public class BrainybotTeleopVision extends LinearOpMode {
             double robotX = 0.0;
             double robotY = 0.0;
             double robotBearing = 0.0;
-            boolean leftLadder, rightLadder;
+            boolean leftLadder, rightLadder, servoLadder;
 
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
@@ -156,6 +156,7 @@ public class BrainybotTeleopVision extends LinearOpMode {
                 bottomArmY = gamepad1.y;
                 leftLadder = gamepad2.a;
                 rightLadder = gamepad2.y;
+                servoLadder = gamepad2.b;
 
 
                 // Ask the listener for the latest information on where the robot is
@@ -259,17 +260,20 @@ public class BrainybotTeleopVision extends LinearOpMode {
                 else if ((leftFrontX < -0.5) && (leftFrontY > 0.5) && (rightFrontX < -0.5) && (rightFrontY > 0.5)) {
                     robot.tableMotor.setPower(leftFrontY);
                     robot.rightMotor.setPower(rightFrontY);
-                } else if (leftLadder) {
+                } else if (leftLadder) { // Move bar UP
                     robot.leftLadderArm.setPower(-1.0);
                     robot.rightLadderArm.setPower(-1.0);
-                } else if (rightLadder) {
+                } else if (rightLadder) { // Move bar DOWN
                     robot.leftLadderArm.setPower(1.0);
                     robot.rightLadderArm.setPower(1.0);
-                } else if (bottomArmA) {
+                } else if (bottomArmA) { // Spin outward
                     robot.bottomArm.setPower(-0.5);
-                } else if (bottomArmY) {
+                } else if (bottomArmY) { // Spin inward
                     robot.bottomArm.setPower(0.5);
-                } else {
+                } else if (servoLadder) { // Open servo to release bars
+                    robot.leftClaw.setPosition(0.0);
+                }
+                else {
                     robot.armMotor.setPower(0.0);
                     robot.tableMotor.setPower(0.0);
                     robot.leftMotor.setPower(0.0);
@@ -278,6 +282,7 @@ public class BrainybotTeleopVision extends LinearOpMode {
                     robot.bottomArm.setPower(0.0);
                     robot.leftLadderArm.setPower(0.0);
                     robot.rightLadderArm.setPower(0.0);
+                    robot.leftClaw.setPosition(0.3);
                 }
 
                 // check the status of the x button .
