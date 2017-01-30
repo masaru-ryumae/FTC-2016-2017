@@ -207,6 +207,66 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
     // wait for the start button to be pressed.
     waitForStart();
 
+      // mecanum wheel zig/zag testing.
+      // Front wheels to right
+      robot.armMotor.setPower(SLIDE_SPEED);
+      robot.tableMotor.setPower(-SLIDE_SPEED);
+      robot.leftMotor.setPower(SLIDE_SPEED);
+      robot.rightMotor.setPower(-SLIDE_SPEED);
+      runtime.reset();
+      while (opModeIsActive() && (runtime.seconds() < 3.0)) {
+          telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+          telemetry.update();
+          idle();
+      }
+      goStop();
+      sleep(5000);
+
+      // Front wheels to left
+      robot.armMotor.setPower(SLIDE_SPEED);
+      robot.tableMotor.setPower(-SLIDE_SPEED);
+      robot.leftMotor.setPower(SLIDE_SPEED);
+      robot.rightMotor.setPower(-SLIDE_SPEED);
+      runtime.reset();
+      while (opModeIsActive() && (runtime.seconds() < 3.0)) {
+          telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+          telemetry.update();
+          idle();
+      }
+      goStop();
+      sleep(5000);
+
+      // Back wheels to right
+      robot.armMotor.setPower(SLIDE_SPEED);
+      robot.tableMotor.setPower(-SLIDE_SPEED);
+      robot.leftMotor.setPower(SLIDE_SPEED);
+      robot.rightMotor.setPower(-SLIDE_SPEED);
+      runtime.reset();
+      while (opModeIsActive() && (runtime.seconds() < 3.0)) {
+          telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+          telemetry.update();
+          idle();
+      }
+      goStop();
+      sleep(5000);
+
+      // Back wheels to left
+      robot.armMotor.setPower(SLIDE_SPEED);
+      robot.tableMotor.setPower(-SLIDE_SPEED);
+      robot.leftMotor.setPower(SLIDE_SPEED);
+      robot.rightMotor.setPower(-SLIDE_SPEED);
+      runtime.reset();
+      while (opModeIsActive() && (runtime.seconds() < 3.0)) {
+          telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+          telemetry.update();
+          idle();
+      }
+      goStop();
+      sleep(5000);
+
+
+
+      /*
       telemetry.addData("RobotX", robotX);
       telemetry.addData("RobotY", robotY);
       telemetry.addData("RobotZ", robotX);
@@ -215,7 +275,7 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
       telemetry.addData("WHEELS_Z",   WHEELS_Z);
       telemetry.update();
       sleep(5000);
-
+      */
       //telemetry.addData("Status",   "Testing NXT Light Sensor");
       //telemetry.update();
       //sleep(5000);
@@ -297,6 +357,7 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
               idle();
           }
           goStop();
+          sleep(5000); //=> This might allow the images to be found?
           telemetry.addData("Status", "Looking for target...");
           telemetry.update();
           idle();
@@ -600,6 +661,24 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
           // STOP to recognize color.
           // GOOD, without these stop, the robot does not stop from above.
           goStop();
+
+          // Then, back wheels to zig zag to line up.
+          /*
+          //robot.armMotor.setPower(SLIDE_SPEED);
+          robot.tableMotor.setPower(-SLIDE_SPEED);
+          //robot.leftMotor.setPower(SLIDE_SPEED);
+          robot.rightMotor.setPower(-SLIDE_SPEED);
+
+          while (opModeIsActive() && (lightSensorBack.getRawLightDetected() < WHITE_THRESHOLD)) {
+
+              // Display the light level while we are looking for the line
+              telemetry.addData("Light Level",  lightSensor.getRawLightDetected());
+              telemetry.addData("Light Back Level",  lightSensorBack.getRawLightDetected());
+              telemetry.update();
+              idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
+          }
+          goStop();
+          */
       }
 
       //////////////
@@ -697,6 +776,9 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
       // END: First staright move close to the button where it can recognize color
 
       // START: Recognize RED Color
+      // Change to BLUE recognition
+      //else if ((colorSensor.blue() >= 1) && (hsvValues[0] > 100) && (colorSensor.red() == 0)
+      //&& (buttonPushed == false)
       if ((colorSensor.red() >= 1) && (colorSensor.blue() == 0) &&
               (buttonPushed == false)) {
           telemetry.addData("Status", "RED DETECTED");
@@ -734,7 +816,31 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
           slideLeft(SLIDE_SPEED, 0.5);
           sleep(1000);
           // Then bump button
-          goForward(SLOWERST_FORWARD_SPEED, 0.3);
+          //goForward(SLOWERST_FORWARD_SPEED, 0.3);
+          // START: Bump the button!!
+          robot.armMotor.setPower(SLOWERST_FORWARD_SPEED);
+          robot.tableMotor.setPower(SLOWERST_FORWARD_SPEED);
+          robot.leftMotor.setPower(SLOWERST_FORWARD_SPEED);
+          robot.rightMotor.setPower(SLOWERST_FORWARD_SPEED);
+
+          // 0.40 is about hitting the button on beacon, if the distance sensor is right hand
+          // side beacon detection, then this 0.40 is too much, about 0.20 would work.
+          while (opModeIsActive() && (odsSensorRight.getRawLightDetected() < 0.40)) { // GOOD to stop close to recognize color
+              //while (odsSensor.getRawLightDetected() < 0.1) {
+              telemetry.addData("ODS Right Raw",    odsSensorRight.getRawLightDetected());
+              //telemetry.addData("Status", "In first while loop");
+              telemetry.update();
+              //sleep(10000);
+
+          }
+
+          // STOP to recognize color.
+          // GOOD, without these stop, the robot does not stop from above.
+          robot.armMotor.setPower(0.0);
+          robot.tableMotor.setPower(0.0);
+          robot.leftMotor.setPower(0.0);
+          robot.rightMotor.setPower(0.0);
+          // END: Bump the button!!
 
       }
       // END: Recognize Color
@@ -744,13 +850,30 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
       telemetry.addData("Status", "Backing up");
       telemetry.update();
       sleep(3000);
-      goForward(-FORWARD_SPEED, 0.2);
+      goForward(-FORWARD_SPEED, 0.4);
 
-      // Slide left to detect the next Beacon
-      telemetry.addData("Status", "Sliding LEFT!!");
+      // rotateLeft so front faces next white line on the next image
+      turnLeft(FORWARD_SPEED, 1.0);
+      sleep(1000);
+
+      // Go and stop at the next white line on next image
+      telemetry.addData("Status", "Going to detect next white line!!");
       telemetry.update();
       sleep(3000);
-      slideLeft(SLIDE_SPEED, 3.5);
+      goForwardTillLine(FORWARD_SPEED, lightSensor);
+      //slideLeft(SLIDE_SPEED, 3.5);
+
+      // rotateRight so it faces the beacon
+      // After turn, the left color sensor should be at the left button.
+      turnRight(FORWARD_SPEED, 1.0);
+
+      //
+      // Then, recognize the color and bump like before.
+      // CODE NEEDED HERE!
+
+
+
+
 /*
       robot.armMotor.setPower(FORWARD_SPEED);
       robot.tableMotor.setPower(FORWARD_SPEED);
@@ -1096,6 +1219,26 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
         goStop();
     }
 
+    public void goForwardTillLine(double speed, LightSensor sensor) throws InterruptedException
+    {
+        // This function allows robot to go forward with speed, time duration argument.
+
+        robot.armMotor.setPower(speed);
+        robot.tableMotor.setPower(speed);
+        robot.leftMotor.setPower(speed);
+        robot.rightMotor.setPower(speed);
+        while (opModeIsActive() && (sensor.getRawLightDetected() < WHITE_THRESHOLD)) {
+
+            // Display the light level while we are looking for the line
+            telemetry.addData("Light Level",  sensor.getRawLightDetected());
+            telemetry.update();
+            idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
+        }
+
+        // Stop
+        goStop();
+    }
+
     public void turnRight(double speed, double duration) throws InterruptedException
     {
         // This function allows robot to turn right with speed, time duration argument.
@@ -1103,6 +1246,24 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
         robot.tableMotor.setPower(speed);
         robot.leftMotor.setPower(-speed);
         robot.rightMotor.setPower(-speed);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < duration)) {
+            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+            telemetry.update();
+            idle();
+        }
+
+        // Stop
+        goStop();
+    }
+
+    public void turnLeft(double speed, double duration) throws InterruptedException
+    {
+        // This function allows robot to turn right with speed, time duration argument.
+        robot.armMotor.setPower(-speed);
+        robot.tableMotor.setPower(-speed);
+        robot.leftMotor.setPower(speed);
+        robot.rightMotor.setPower(speed);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < duration)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
