@@ -88,7 +88,9 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
     HardwareBrainybot robot           = new HardwareBrainybot();
     private ElapsedTime runtime = new ElapsedTime();
     OpticalDistanceSensor odsSensor;  // Hardware Device Object
+    OpticalDistanceSensor odsSensorRight;  // Hardware Device Object
     LightSensor lightSensor;
+    LightSensor lightSensorBack;
 
     static final double SLIDE_SPEED = -0.5; // SLIDE_SPEED always Negative value
     static final double FORWARD_SPEED = -0.6;
@@ -96,12 +98,12 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
     static final double SLOWERST_FORWARD_SPEED = -0.1;
     static final double ROTATE_SPEED = -0.1;
 
-    static final double WHITE_THRESHOLD = 1.5;  // spans between 0.1 - 0.5 from dark to light
+    static final double WHITE_THRESHOLD = 1.4;  // spans between 0.1 - 0.5 from dark to light
 
     //static final double WHEELS_X = 472.1;
-    static final double WHEELS_X = 800.1;
+    static final double WHEELS_X = 600.1;
     static final double WHEELS_Y = 480.1;
-    static final double WHEELS_Z = 91.1;
+    static final double WHEELS_Z = 90.1;
 
     // Robot's X, Y, Z coordinate values
     double robotX = 0.0;
@@ -144,15 +146,17 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
 
     // get a reference to our Distance Sensor object.
     odsSensor = hardwareMap.opticalDistanceSensor.get("ods");
+    odsSensorRight = hardwareMap.opticalDistanceSensor.get("ods right");
 
     lightSensor = hardwareMap.lightSensor.get("light sensor");
+    lightSensorBack = hardwareMap.lightSensor.get("light sensor back");
 
     // Set the LED in the beginning
     colorSensor.enableLed(bLedOn);
-      odsSensor.enableLed(false);
 
     // turn on LED of light sensor.
     lightSensor.enableLed(true);
+    lightSensorBack.enableLed(true);
 
     robot.init(hardwareMap);
 
@@ -188,7 +192,9 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
         }
 
         telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
+        telemetry.addData("ODS Right Raw",    odsSensorRight.getRawLightDetected());
         telemetry.addData("Light Raw Level", lightSensor.getRawLightDetected());
+        telemetry.addData("Light Back Raw Level", lightSensor.getRawLightDetected());
         telemetry.addData("robotX",   robotX);
         telemetry.addData("robotY   ",   robotY);
         telemetry.addData("Bear  ", robotBearing);
@@ -241,44 +247,27 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
       /////////////////
       /// Includes to start from the beginning at the wall
       // Go forward
-      goForward(FORWARD_SPEED, 1.0);
+      goForward(FORWARD_SPEED, 1.1);
+      sleep(1000);
 
       // Turn right
-      turnRight(FORWARD_SPEED, 1.0);
+      turnRight(FORWARD_SPEED, 0.6);
+      sleep(1000);
 
       // Go forward
-      goForward(FORWARD_SPEED, 1.5);
+      goForward(FORWARD_SPEED, 2.0);
 
-      // Go backward
-      goForward(-SLOWER_FORWARD_SPEED, 0.5);
-
-      // Turn right
-      turnRight(SLOWER_FORWARD_SPEED, 0.6);
-
-      /////////
-      ////////
-      /////////
-
-      // First, rotate.
-      telemetry.addData("Status", "rotating to Left!");
-      telemetry.update();
       sleep(5000);
 
-      // BUG - CURRENTLY NOT WORKING RIGHT. TURNS TOO MUCH to LEFT!
-      // If robotZ > WHEELS_Z, then rotateLeft
-      // else rotateRight
-      //////////////
-      // START Z MOVE
-      /////////////
-      // CASE: rotateLeft to image
-      robot.armMotor.setPower(-ROTATE_SPEED);
-      robot.tableMotor.setPower(-ROTATE_SPEED);
-      robot.leftMotor.setPower(ROTATE_SPEED);
-      robot.rightMotor.setPower(ROTATE_SPEED);
-      while (opModeIsActive() && (robotBearing < WHEELS_Z)) { // GOOD to stop close to recognize color
+      // NOTE if THIS FAILS, EVERYTHING FAILS!!
+      turnRight(FORWARD_SPEED, 0.3);
+
+    // This doesnt appear to work, try to look for target. Too quick the image.
+     /* while (opModeIsActive() && (!listener.isVisible())) {
           // Ask the listener for the latest information on where the robot is
           OpenGLMatrix latestLocation = listener.getUpdatedRobotLocation();
 
+          // The listener will sometimes return null, so we check for that to prevent errors
           if (latestLocation != null) {
               lastKnownLocation = latestLocation;
               // Then you can extract the positions and angles using the getTranslation and getOrientation methods.
@@ -297,23 +286,156 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
           else {
               telemetry.addData("Pos   ", "Unknown");
           }
-
-          telemetry.addData("RobotX", robotX);
-          telemetry.addData("RobotY ",   robotY);
-          telemetry.addData("Bear  ", robotBearing);
-          telemetry.addData("Pos   ", formatMatrix(lastKnownLocation));
-          telemetry.addData("Status", "In robotBearing while loop");
+          robot.armMotor.setPower(SLOWERST_FORWARD_SPEED);
+          robot.tableMotor.setPower(SLOWERST_FORWARD_SPEED);
+          robot.leftMotor.setPower(-SLOWER_FORWARD_SPEED);
+          robot.rightMotor.setPower(-SLOWER_FORWARD_SPEED);
+          runtime.reset();
+          while (opModeIsActive() && (runtime.seconds() < 0.2)) {
+              telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+              telemetry.update();
+              idle();
+          }
+          goStop();
+          telemetry.addData("Status", "Looking for target...");
           telemetry.update();
-          robotYToUse = robotY;
           idle();
-          //sleep(10000);
-
       }
+      */
+      // Stop
+      //goStop();
+
+      // Go backward
+      //goForward(-SLOWER_FORWARD_SPEED, 0.5);
+
+      // Turn right
+      //turnRight(SLOWER_FORWARD_SPEED, 0.6);
+
+      /////////
+      ////////
+      /////////
+
+      // Get one time vision info before rotating
+      // Get initial vision info
+      // Ask the listener for the latest information on where the robot is
+
+
+      // First, rotate.
+      telemetry.addData("Status", "Check these before rotating");
+      telemetry.addData("RobotX", robotX);
+      telemetry.addData("RobotY", robotY);
+      telemetry.addData("RobotZ", robotBearing);
+      telemetry.addData("WHEELS_X",   WHEELS_X);
+      telemetry.addData("WHEELS_Y",   WHEELS_Y);
+      telemetry.addData("WHEELS_Z",   WHEELS_Z);
+      telemetry.update();
+      sleep(5000);
+      telemetry.addData("Status", "rotating to Left!");
+      telemetry.update();
+      sleep(5000);
+
+      // BUG - CURRENTLY NOT WORKING RIGHT. TURNS TOO MUCH to LEFT!
+      // If robotZ > WHEELS_Z, then rotateLeft
+      // else rotateRight
+      //////////////
+      // START Z MOVE
+      /////////////
+      // CASE: rotateLeft to image
+      if (robotBearing < WHEELS_Z) {
+          robot.armMotor.setPower(-ROTATE_SPEED);
+          robot.tableMotor.setPower(-ROTATE_SPEED);
+          robot.leftMotor.setPower(ROTATE_SPEED);
+          robot.rightMotor.setPower(ROTATE_SPEED);
+          while (opModeIsActive() && (robotBearing < WHEELS_Z)) { // GOOD to stop close to recognize color
+              // Ask the listener for the latest information on where the robot is
+              OpenGLMatrix latestLocation = listener.getUpdatedRobotLocation();
+
+              if (latestLocation != null) {
+                  lastKnownLocation = latestLocation;
+                  // Then you can extract the positions and angles using the getTranslation and getOrientation methods.
+                  VectorF trans = lastKnownLocation.getTranslation();
+                  Orientation rot = Orientation.getOrientation(lastKnownLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+                  // Robot position is defined by the standard Matrix translation (x and y)
+                  robotX = trans.get(0);
+                  robotY = trans.get(1);
+
+                  // Robot bearing (in Cartesian system) position is defined by the standard Matrix z rotation
+                  robotBearing = rot.thirdAngle;
+                  if (robotBearing < 0) {
+                      robotBearing = 360 + robotBearing;
+                  }
+              }
+              else {
+                  telemetry.addData("Pos   ", "Unknown");
+              }
+
+              telemetry.addData("RobotX", robotX);
+              telemetry.addData("RobotY ",   robotY);
+              telemetry.addData("Bear  ", robotBearing);
+              telemetry.addData("Pos   ", formatMatrix(lastKnownLocation));
+              telemetry.addData("Status", "In robotBearing while loop");
+              telemetry.update();
+              robotYToUse = robotY;
+              idle();
+              //sleep(10000);
+
+          }
+      }
+      else { // rotateRight
+          robot.armMotor.setPower(ROTATE_SPEED);
+          robot.tableMotor.setPower(ROTATE_SPEED);
+          robot.leftMotor.setPower(-ROTATE_SPEED);
+          robot.rightMotor.setPower(-ROTATE_SPEED);
+          while (opModeIsActive() && (robotBearing < WHEELS_Z)) { // GOOD to stop close to recognize color
+              // Ask the listener for the latest information on where the robot is
+              OpenGLMatrix latestLocation = listener.getUpdatedRobotLocation();
+
+              if (latestLocation != null) {
+                  lastKnownLocation = latestLocation;
+                  // Then you can extract the positions and angles using the getTranslation and getOrientation methods.
+                  VectorF trans = lastKnownLocation.getTranslation();
+                  Orientation rot = Orientation.getOrientation(lastKnownLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+                  // Robot position is defined by the standard Matrix translation (x and y)
+                  robotX = trans.get(0);
+                  robotY = trans.get(1);
+
+                  // Robot bearing (in Cartesian system) position is defined by the standard Matrix z rotation
+                  robotBearing = rot.thirdAngle;
+                  if (robotBearing < 0) {
+                      robotBearing = 360 + robotBearing;
+                  }
+              }
+              else {
+                  telemetry.addData("Pos   ", "Unknown");
+              }
+
+              telemetry.addData("RobotX", robotX);
+              telemetry.addData("RobotY ",   robotY);
+              telemetry.addData("Bear  ", robotBearing);
+              telemetry.addData("Pos   ", formatMatrix(lastKnownLocation));
+              telemetry.addData("Status", "In robotBearing while loop");
+              telemetry.update();
+              robotYToUse = robotY;
+              idle();
+              //sleep(10000);
+
+          }
+      }
+
 
       goStop();
       //////////////
       // END Z MOVE
       /////////////
+      telemetry.addData("Status", "Check robotBear");
+      telemetry.addData("Bear  ", robotBearing);
+      telemetry.addData("RobotX", robotX);
+      telemetry.addData("RobotY ",   robotY);
+      telemetry.addData("Bear  ", robotBearing);
+      telemetry.addData("Pos   ", formatMatrix(lastKnownLocation));
+      telemetry.addData("Status", "In robotBearing while loop");
+      telemetry.update();
+      sleep(10000);
 
       // Second, goForward closer to the beacon.
       //////////////
@@ -363,6 +485,13 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
       //////////////
       // END X MOVE
       /////////////
+      telemetry.addData("RobotX", robotX);
+      telemetry.addData("RobotY ",   robotY);
+      telemetry.addData("Bear  ", robotBearing);
+      telemetry.addData("Pos   ", formatMatrix(lastKnownLocation));
+      telemetry.addData("Status", "In robotBearing while loop");
+      telemetry.update();
+      sleep(5000);
 
 
       telemetry.addData("Status", "Sliding to Left or right!");
@@ -419,7 +548,7 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
           // GOOD, without these stop, the robot does not stop from above.
           goStop();
       }
-      else { // Must need to slide right
+      else { // Must need to slide right, NEED to see if it can zig zag
           robot.armMotor.setPower(SLIDE_SPEED);
           robot.tableMotor.setPower(-SLIDE_SPEED);
           robot.leftMotor.setPower(SLIDE_SPEED);
@@ -429,6 +558,7 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
 
               // Display the light level while we are looking for the line
               telemetry.addData("Light Level",  lightSensor.getRawLightDetected());
+              telemetry.addData("Light Back Level",  lightSensorBack.getRawLightDetected());
               telemetry.update();
               idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
           }
@@ -545,6 +675,7 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
       while (opModeIsActive() && (odsSensor.getRawLightDetected() < 0.15)) { // GOOD to stop close to recognize color
           //while (odsSensor.getRawLightDetected() < 0.1) {
           telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
+          telemetry.addData("ODS Right Raw",    odsSensorRight.getRawLightDetected());
           telemetry.addData("Status", "In first while loop");
           telemetry.update();
           //sleep(10000);
@@ -566,16 +697,16 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
       // END: First staright move close to the button where it can recognize color
 
       // START: Recognize RED Color
-      if ((colorSensor.red() >= 2) && (colorSensor.blue() == 0) &&
+      if ((colorSensor.red() >= 1) && (colorSensor.blue() == 0) &&
               (buttonPushed == false)) {
           telemetry.addData("Status", "RED DETECTED");
           telemetry.update();
           sleep(5000);
           // START: Bump the button!!
-          robot.armMotor.setPower(FORWARD_SPEED);
-          robot.tableMotor.setPower(FORWARD_SPEED);
-          robot.leftMotor.setPower(FORWARD_SPEED);
-          robot.rightMotor.setPower(FORWARD_SPEED);
+          robot.armMotor.setPower(SLOWERST_FORWARD_SPEED);
+          robot.tableMotor.setPower(SLOWERST_FORWARD_SPEED);
+          robot.leftMotor.setPower(SLOWERST_FORWARD_SPEED);
+          robot.rightMotor.setPower(SLOWERST_FORWARD_SPEED);
 
           // 0.40 is about hitting the button on beacon, if the distance sensor is right hand
           // side beacon detection, then this 0.40 is too much, about 0.20 would work.
@@ -596,14 +727,14 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
           robot.rightMotor.setPower(0.0);
           // END: Bump the button!!
       }
-      else { //Must be BLUE Color. Slide and bump the button.
+      else { //Must be BLUE Color. Slide left and bump the button with right bumper.
           telemetry.addData("Status", "RED NOT DETECTED, sliding to RIGHT!");
           telemetry.update();
           sleep(5000);
-          slideRight(SLIDE_SPEED, 0.5);
+          slideLeft(SLIDE_SPEED, 0.5);
           sleep(1000);
           // Then bump button
-          goForward(FORWARD_SPEED, 0.3);
+          goForward(SLOWERST_FORWARD_SPEED, 0.3);
 
       }
       // END: Recognize Color
@@ -745,6 +876,8 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
       // send the info back to driver station using telemetry function.
       telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
       telemetry.addData("ODS Normal", odsSensor.getLightDetected());
+        telemetry.addData("ODS Right Raw",    odsSensorRight.getRawLightDetected());
+        telemetry.addData("ODS Right Normal", odsSensorRight.getLightDetected());
       telemetry.addData("Button Pushed?", buttonPushed);
       telemetry.update(); // THIS CODE GOOD, so all values are on screen
 
@@ -968,10 +1101,10 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
         // This function allows robot to turn right with speed, time duration argument.
         robot.armMotor.setPower(speed);
         robot.tableMotor.setPower(speed);
-        //robot.leftMotor.setPower(speed);
-        //robot.rightMotor.setPower(speed);
+        robot.leftMotor.setPower(-speed);
+        robot.rightMotor.setPower(-speed);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1.2)) {
+        while (opModeIsActive() && (runtime.seconds() < duration)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
             idle();
