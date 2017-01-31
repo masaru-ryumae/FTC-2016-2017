@@ -50,12 +50,14 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 public class SensorMROpticalDistance extends LinearOpMode {
 
   OpticalDistanceSensor odsSensor;  // Hardware Device Object
+  OpticalDistanceSensor odsSensorRight;  // Hardware Device Object
 
   @Override
   public void runOpMode() throws InterruptedException {
 
     // get a reference to our Light Sensor object.
     odsSensor = hardwareMap.opticalDistanceSensor.get("ods");
+    odsSensorRight = hardwareMap.opticalDistanceSensor.get("ods right");
 
     // wait for the start button to be pressed.
     waitForStart();
@@ -67,6 +69,8 @@ public class SensorMROpticalDistance extends LinearOpMode {
       // send the info back to driver station using telemetry function.
       telemetry.addData("Raw",    odsSensor.getRawLightDetected());
       telemetry.addData("Normal", odsSensor.getLightDetected());
+      telemetry.addData("Right Raw",    odsSensorRight.getRawLightDetected());
+      telemetry.addData("Right Normal", odsSensorRight.getLightDetected());
 
       telemetry.update();
       idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
