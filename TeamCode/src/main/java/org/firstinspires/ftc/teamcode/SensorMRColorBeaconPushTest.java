@@ -93,6 +93,8 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
     LightSensor lightSensorBack;
 
     static final double SLIDE_SPEED = -0.5; // SLIDE_SPEED always Negative value
+    static final double SLOWER_SLIDE_SPEED = -0.3; // SLIDE_SPEED always Negative value
+    static final double SLOWEST_SLIDE_SPEED = -0.1; // SLIDE_SPEED always Negative value
     static final double FORWARD_SPEED = -0.6;
     static final double SLOWER_FORWARD_SPEED = -0.3;
     static final double SLOWERST_FORWARD_SPEED = -0.1;
@@ -208,62 +210,25 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
     waitForStart();
 
       // mecanum wheel zig/zag testing.
+      goForward(FORWARD_SPEED, 2.2);
+      sleep(5000);
+      // Approach from left of white line
       // Front wheels to right
-      robot.armMotor.setPower(SLIDE_SPEED);
-      robot.tableMotor.setPower(-SLIDE_SPEED);
-      robot.leftMotor.setPower(SLIDE_SPEED);
-      robot.rightMotor.setPower(-SLIDE_SPEED);
-      runtime.reset();
-      while (opModeIsActive() && (runtime.seconds() < 3.0)) {
-          telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
-          telemetry.update();
-          idle();
-      }
-      goStop();
-      sleep(5000);
-
-      // Front wheels to left
-      robot.armMotor.setPower(SLIDE_SPEED);
-      robot.tableMotor.setPower(-SLIDE_SPEED);
-      robot.leftMotor.setPower(SLIDE_SPEED);
-      robot.rightMotor.setPower(-SLIDE_SPEED);
-      runtime.reset();
-      while (opModeIsActive() && (runtime.seconds() < 3.0)) {
-          telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
-          telemetry.update();
-          idle();
-      }
-      goStop();
-      sleep(5000);
-
+      frontWheelsToRight(SLOWER_SLIDE_SPEED, lightSensor);
+      sleep(1000);
       // Back wheels to right
-      robot.armMotor.setPower(SLIDE_SPEED);
-      robot.tableMotor.setPower(-SLIDE_SPEED);
-      robot.leftMotor.setPower(SLIDE_SPEED);
-      robot.rightMotor.setPower(-SLIDE_SPEED);
-      runtime.reset();
-      while (opModeIsActive() && (runtime.seconds() < 3.0)) {
-          telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
-          telemetry.update();
-          idle();
-      }
-      goStop();
+      backWheelsToRight(SLOWER_SLIDE_SPEED, lightSensorBack);
       sleep(5000);
 
+      /*
+      // Approach from right of whilte line
+      //Front wheels to left
+      frontWheelsToLeft(SLOWER_SLIDE_SPEED, lightSensor);
+      sleep(1000);
       // Back wheels to left
-      robot.armMotor.setPower(SLIDE_SPEED);
-      robot.tableMotor.setPower(-SLIDE_SPEED);
-      robot.leftMotor.setPower(SLIDE_SPEED);
-      robot.rightMotor.setPower(-SLIDE_SPEED);
-      runtime.reset();
-      while (opModeIsActive() && (runtime.seconds() < 3.0)) {
-          telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
-          telemetry.update();
-          idle();
-      }
-      goStop();
+      backWheelsToLeft(SLOWER_SLIDE_SPEED, lightSensorBack);
       sleep(5000);
-
+        */
 
 
       /*
@@ -1310,6 +1275,70 @@ public class SensorMRColorBeaconPushTest extends LinearOpMode {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
             idle();
+        }
+
+        goStop();
+    }
+
+    public void frontWheelsToRight(double speed, LightSensor sensor) throws InterruptedException
+    {
+        // Slide left
+        robot.armMotor.setPower(speed); //Forward
+        robot.rightMotor.setPower(-speed); //Backward
+        while (opModeIsActive() && (sensor.getRawLightDetected() < WHITE_THRESHOLD)) {
+
+            // Display the light level while we are looking for the line
+            telemetry.addData("Light Level",  sensor.getRawLightDetected());
+            telemetry.update();
+            idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
+        }
+        goStop();
+    }
+
+    public void frontWheelsToLeft(double speed, LightSensor sensor) throws InterruptedException
+    {
+        // Slide left
+        robot.armMotor.setPower(-speed); //Backward
+        robot.rightMotor.setPower(speed); //Forward;
+
+        while (opModeIsActive() && (sensor.getRawLightDetected() < WHITE_THRESHOLD)) {
+
+            // Display the light level while we are looking for the line
+            telemetry.addData("Light Level",  sensor.getRawLightDetected());
+            telemetry.update();
+            idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
+        }
+
+        goStop();
+    }
+
+    public void backWheelsToRight(double speed, LightSensor sensor) throws InterruptedException
+    {
+        robot.tableMotor.setPower(-speed);
+        robot.leftMotor.setPower(speed);
+
+        while (opModeIsActive() && (sensor.getRawLightDetected() < WHITE_THRESHOLD)) {
+
+            // Display the light level while we are looking for the line
+            telemetry.addData("Light Level",  sensor.getRawLightDetected());
+            telemetry.update();
+            idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
+        }
+
+        goStop();
+    }
+
+    public void backWheelsToLeft(double speed, LightSensor sensor) throws InterruptedException
+    {
+        robot.tableMotor.setPower(speed);
+        robot.leftMotor.setPower(-speed);
+
+        while (opModeIsActive() && (sensor.getRawLightDetected() < WHITE_THRESHOLD)) {
+
+            // Display the light level while we are looking for the line
+            telemetry.addData("Light Level",  sensor.getRawLightDetected());
+            telemetry.update();
+            idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
         }
 
         goStop();
