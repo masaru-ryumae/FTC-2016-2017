@@ -4,23 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-
 /*
  * This OpMode was written for the Vuforia Basics video. This demonstrates basic principles of
  * using Vuforia in FTC.
  */
-@Autonomous(name = "1 - Blue Ramp", group = "Prod")
-public class AutonomousBlueRampFinal extends LinearOpMode
+@Autonomous(name = "1 - Blue Ramp 10 sec Delay", group = "Prod")
+public class AutonomousBlueRampDelayedFinal extends LinearOpMode
 {
 
     HardwareBrainybot robot           = new HardwareBrainybot();
@@ -46,6 +35,7 @@ public class AutonomousBlueRampFinal extends LinearOpMode
 
         waitForStart();
 
+        sleep(10000);
 
         // Turn right
         turnRight(FORWARD_SPEED, 1.2);

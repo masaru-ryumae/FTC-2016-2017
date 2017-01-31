@@ -4,23 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-
 /*
  * This OpMode was written for the Vuforia Basics video. This demonstrates basic principles of
  * using Vuforia in FTC.
  */
-@Autonomous(name = "1 - Blue Ramp", group = "Prod")
-public class AutonomousBlueRampFinal extends LinearOpMode
+@Autonomous(name = "1 - Red Ramp 10 sec delayed", group = "Prod")
+public class AutonomousRedRampDelayedFinal extends LinearOpMode
 {
 
     HardwareBrainybot robot           = new HardwareBrainybot();
@@ -46,15 +35,16 @@ public class AutonomousBlueRampFinal extends LinearOpMode
 
         waitForStart();
 
+        sleep(10000);
 
-        // Turn right
-        turnRight(FORWARD_SPEED, 1.2);
+        // Turn left
+        turnLeft(FORWARD_SPEED, 1.2);
 
         // Go forward
         goForward(FORWARD_SPEED, 0.5);
 
-        // Turn right 45 degrees
-        turnRight(FORWARD_SPEED, 1.2);
+        // Turn left 45 degrees
+        turnLeft(FORWARD_SPEED, 1.2);
 
         // Go forward
         goForward(FORWARD_SPEED, 0.5);
@@ -128,7 +118,25 @@ public class AutonomousBlueRampFinal extends LinearOpMode
         //robot.leftMotor.setPower(speed);
         //robot.rightMotor.setPower(speed);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1.2)) {
+        while (opModeIsActive() && (runtime.seconds() < duration)) {
+            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+            telemetry.update();
+            idle();
+        }
+
+        // Stop
+        goStop();
+    }
+
+    public void turnLeft(double speed, double duration) throws InterruptedException
+    {
+        // This function allows robot to turn right with speed, time duration argument.
+        //robot.armMotor.setPower(speed);
+        //robot.tableMotor.setPower(speed);
+        robot.leftMotor.setPower(speed);
+        robot.rightMotor.setPower(speed);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < duration)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
             idle();
