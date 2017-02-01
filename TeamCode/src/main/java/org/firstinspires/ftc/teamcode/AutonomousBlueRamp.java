@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * This OpMode was written for the Vuforia Basics video. This demonstrates basic principles of
  * using Vuforia in FTC.
  */
-@Autonomous(name = "Blue Ramp")
+@Autonomous(name = "1 - Blue Ramp", group = "Prod")
 public class AutonomousBlueRamp extends LinearOpMode
 {
     // Variables to be used for later
