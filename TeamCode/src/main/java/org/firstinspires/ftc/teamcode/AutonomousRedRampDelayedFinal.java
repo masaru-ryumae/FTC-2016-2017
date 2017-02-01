@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * This OpMode was written for the Vuforia Basics video. This demonstrates basic principles of
  * using Vuforia in FTC.
  */
-@Autonomous(name = "1 - Red Ramp 10 sec delayed", group = "Prod")
+@Autonomous(name = "1 - Red Ramp 10 Sec Delayed GOLD", group = "Prod")
 public class AutonomousRedRampDelayedFinal extends LinearOpMode
 {
 
@@ -50,7 +50,7 @@ public class AutonomousRedRampDelayedFinal extends LinearOpMode
         goForward(FORWARD_SPEED, 0.5);
 
         // Release ball for 2 seconds
-        handleBall(TURN_SPEED, 2.0);
+        handleBall(TURN_SPEED, 3.0);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
