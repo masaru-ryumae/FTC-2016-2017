@@ -64,7 +64,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name = "2 - BLUE Beacon", group = "Prod")
+@Autonomous(name = "2 - BLUE Beacon/Central Ball GOLD", group = "Prod")
 
 public class AutonomousBlueBeacon extends LinearOpMode {
 
@@ -87,6 +87,7 @@ public class AutonomousBlueBeacon extends LinearOpMode {
     static final double SLOWER_FORWARD_SPEED = -0.3;
     static final double SLOWERST_FORWARD_SPEED = -0.1;
     static final double ROTATE_SPEED = -0.1;
+    static final double     TURN_SPEED    = -0.5;
 
     static final double WHITE_THRESHOLD = 1.4;  // spans between 0.1 - 0.5 from dark to light
     static final double ODS_SENSOR_LEFT_THRESHOLD = 0.40; // Left ODS sensor threashold
@@ -162,10 +163,10 @@ public class AutonomousBlueBeacon extends LinearOpMode {
         waitForStart();
 
         // mecanum wheel zig/zag testing.
-        goForward(FORWARD_SPEED, 2.2);
-        sleep(1000);
+        goForward(FORWARD_SPEED, 2.1);
+        sleep(500);
         turnRight(FORWARD_SPEED, 0.5);
-        sleep(1000);
+        sleep(500);
         // Approach from left of white line
         goToLineFromLeft(SLOWER_SLIDE_SPEED, lightSensor, lightSensorBack, WHITE_THRESHOLD);
         /*
@@ -203,13 +204,13 @@ public class AutonomousBlueBeacon extends LinearOpMode {
 
 
         // Change to Distance Sensor
-        telemetry.addData("Status", "Switching to Distance Sensor!");
-        telemetry.update();
-        sleep(1000);
+        //telemetry.addData("Status", "Switching to Distance Sensor!");
+        //telemetry.update();
+        //sleep(1000);
 
 
         // START: First staright move close to the button where it can recognize color
-        goForwardTillDistance(SLOWER_FORWARD_SPEED, odsSensor, ODS_SENSOR_COLOR_RECOG_THRESHOLD);
+        goForwardTillDistance(SLOWERST_FORWARD_SPEED, odsSensor, ODS_SENSOR_COLOR_RECOG_THRESHOLD);
         Color.RGBToHSV(colorSensor.red() * 8, colorSensor.green() * 8, colorSensor.blue() * 8, hsvValues);
         /*
         robot.armMotor.setPower(SLOWERST_FORWARD_SPEED);
@@ -242,7 +243,7 @@ public class AutonomousBlueBeacon extends LinearOpMode {
         telemetry.addData("Blue ", colorSensor.blue());
         telemetry.addData("Hue ", hsvValues[0]);
         telemetry.update();
-        sleep(2000);
+        sleep(500);
         // END: First staright move close to the button where it can recognize color
 
         // START: Recognize RED Color
@@ -253,7 +254,7 @@ public class AutonomousBlueBeacon extends LinearOpMode {
         //if ((colorSensor.red() >= 1) && (colorSensor.blue() == 0)) {
             telemetry.addData("Status", "BLUE DETECTED");
             telemetry.update();
-            sleep(2000);
+            sleep(500);
             // START: Bump the button!!
             bumpButton(SLOWER_FORWARD_SPEED, odsSensor, ODS_SENSOR_LEFT_THRESHOLD);
             /*
@@ -285,9 +286,9 @@ public class AutonomousBlueBeacon extends LinearOpMode {
         else { //Must be RED Color. Slide left and bump the button with right bumper.
             telemetry.addData("Status", "BLUE NOT DETECTED, sliding to LEFT!");
             telemetry.update();
-            sleep(2000);
+            sleep(500);
             //slideLeft(SLIDE_SPEED, 0.5);
-            goToLineFromLeft(SLOWER_SLIDE_SPEED, lightSensorRightFront, lightSensorRightBack, WHITE_THRESHOLD);
+            goToLineFromRight(SLOWER_SLIDE_SPEED, lightSensorRightFront, lightSensorRightBack, WHITE_THRESHOLD);
             /*
             robot.armMotor.setPower(-SLOWER_SLIDE_SPEED);
             robot.tableMotor.setPower(SLOWER_SLIDE_SPEED);
@@ -309,7 +310,7 @@ public class AutonomousBlueBeacon extends LinearOpMode {
 
             goStop();
             */
-            sleep(1000);
+            sleep(500);
             // Then bump button
             //goForward(SLOWERST_FORWARD_SPEED, 0.3);
             bumpButton(SLOWER_FORWARD_SPEED, odsSensorRight, ODS_SENSOR_RIGHT_THRESHOLD);
@@ -351,15 +352,23 @@ public class AutonomousBlueBeacon extends LinearOpMode {
         // Go back a bit after pressing the button
         telemetry.addData("Status", "Backing up");
         telemetry.update();
-        sleep(1000);
-        goForward(-FORWARD_SPEED, 0.3);
-
-        sleep(1000);
+        sleep(500);
+        goForward(-FORWARD_SPEED, 2.2);
+        sleep(500);
+        turnLeft(FORWARD_SPEED, 0.3);
+        sleep(500);
 
         // CODE NEEDED!!
         // Hit the center ball
         // Go up the ramp and release the ball
-
+        /*
+        turnRight(FORWARD_SPEED,0.8);
+        sleep(500);
+        goForward(FORWARD_SPEED, 2.3);
+        sleep(500);
+        handleBall(TURN_SPEED, 3.0);
+        sleep(5000);
+        */
 
 
 /*
@@ -685,6 +694,22 @@ public class AutonomousBlueBeacon extends LinearOpMode {
         robot.tableMotor.setPower(0);
         robot.leftMotor.setPower(0);
         robot.rightMotor.setPower(0);
+    }
+
+    public void handleBall(double speed, double duration) throws InterruptedException
+    {
+        // This function allows robot to go forward with speed, time duration argument.
+
+        robot.bottomArm.setPower(speed);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < duration)) {
+            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+            telemetry.update();
+            idle();
+        }
+
+        // Stop
+        goStop();
     }
 
     public void goForwardTillDistance(double speed, OpticalDistanceSensor sensor, double threshold) throws InterruptedException
