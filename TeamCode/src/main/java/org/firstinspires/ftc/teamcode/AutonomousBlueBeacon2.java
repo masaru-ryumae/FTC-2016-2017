@@ -62,7 +62,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name = "3 - BLUE Beacon", group = "Prod")
+@Autonomous(name = "3 - BLUE Beacon/Beacon GOLD", group = "Prod")
 
 public class AutonomousBlueBeacon2 extends LinearOpMode {
 
@@ -85,6 +85,7 @@ public class AutonomousBlueBeacon2 extends LinearOpMode {
     static final double SLOWER_FORWARD_SPEED = -0.3;
     static final double SLOWERST_FORWARD_SPEED = -0.1;
     static final double ROTATE_SPEED = -0.1;
+    static final double     TURN_SPEED    = -0.5;
 
     static final double WHITE_THRESHOLD = 1.4;  // spans between 0.1 - 0.5 from dark to light
     static final double ODS_SENSOR_LEFT_THRESHOLD = 0.40; // Left ODS sensor threashold
@@ -160,87 +161,23 @@ public class AutonomousBlueBeacon2 extends LinearOpMode {
         waitForStart();
 
         // mecanum wheel zig/zag testing.
-        goForward(FORWARD_SPEED, 2.2);
-        sleep(1000);
+        goForward(FORWARD_SPEED, 2.1);
+        sleep(500);
         turnRight(FORWARD_SPEED, 0.5);
-        sleep(1000);
+        sleep(500);
         // Approach from left of white line
         goToLineFromLeft(SLOWER_SLIDE_SPEED, lightSensor, lightSensorBack, WHITE_THRESHOLD);
-        /*
-        robot.armMotor.setPower(SLOWER_SLIDE_SPEED);
-        robot.tableMotor.setPower(-SLOWER_SLIDE_SPEED);
-        robot.leftMotor.setPower(SLOWER_SLIDE_SPEED);
-        robot.rightMotor.setPower(-SLOWER_SLIDE_SPEED);
-
-        while (opModeIsActive() && (lightSensor.getRawLightDetected() < WHITE_THRESHOLD)
-                && (lightSensorBack.getRawLightDetected() < WHITE_THRESHOLD)) {
-
-            // Display the light level while we are looking for the line
-            telemetry.addData("Light Level",  lightSensor.getRawLightDetected());
-            telemetry.addData("Light Back Level",  lightSensorBack.getRawLightDetected());
-            telemetry.addData("Light Right Front Level",  lightSensorRightFront.getRawLightDetected());
-            telemetry.addData("Light Right Back Level",  lightSensorRightBack.getRawLightDetected());
-            telemetry.update();
-            idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
-        }
-
-        goStop();
-        */
-
-        // Front wheels to right
-        //backWheelsToRight(SLOWER_SLIDE_SPEED, lightSensorBack);
-        //frontWheelsToRight(SLOWER_SLIDE_SPEED, lightSensor);
-        //turnRightTillLight(SLOWER_SLIDE_SPEED, lightSensor);
-        //sleep(1000);
-        // Back wheels to right
-        //frontWheelsToRight(SLOWER_SLIDE_SPEED, lightSensor);
-        //backWheelsToRight(SLOWER_SLIDE_SPEED, lightSensorBack);
-        //sleep(5000);
-
-
-
-
-        // Change to Distance Sensor
-        telemetry.addData("Status", "Switching to Distance Sensor!");
-        telemetry.update();
-        sleep(1000);
-
 
         // START: First staright move close to the button where it can recognize color
-        goForwardTillDistance(SLOWER_FORWARD_SPEED, odsSensor, ODS_SENSOR_COLOR_RECOG_THRESHOLD);
+        goForwardTillDistance(SLOWERST_FORWARD_SPEED, odsSensor, ODS_SENSOR_COLOR_RECOG_THRESHOLD);
         Color.RGBToHSV(colorSensor.red() * 8, colorSensor.green() * 8, colorSensor.blue() * 8, hsvValues);
-        /*
-        robot.armMotor.setPower(SLOWERST_FORWARD_SPEED);
-        robot.tableMotor.setPower(SLOWERST_FORWARD_SPEED);
-        robot.leftMotor.setPower(SLOWERST_FORWARD_SPEED);
-        robot.rightMotor.setPower(SLOWERST_FORWARD_SPEED);
-
-        while (opModeIsActive() && (odsSensor.getRawLightDetected() < 0.15)) { // GOOD to stop close to recognize color
-            //while (odsSensor.getRawLightDetected() < 0.1) {
-            telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
-            telemetry.addData("ODS Right Raw",    odsSensorRight.getRawLightDetected());
-            //telemetry.addData("Status", "In first while loop");
-            telemetry.update();
-            //sleep(10000);
-            idle();
-
-        }
-
-        // STOP to recognize color.
-        // GOOD, without these stop, the robot does not stop from above.
-        //robot.armMotor.setPower(0.0);
-        //robot.tableMotor.setPower(0.0);
-        //robot.leftMotor.setPower(0.0);
-        //robot.rightMotor.setPower(0.0);
-        goStop();
-        */
 
         telemetry.addData("Status", "FIRST stop");
         telemetry.addData("Red  ", colorSensor.red());
         telemetry.addData("Blue ", colorSensor.blue());
         telemetry.addData("Hue ", hsvValues[0]);
         telemetry.update();
-        sleep(2000);
+        sleep(500);
         // END: First staright move close to the button where it can recognize color
 
         // START: Recognize RED Color
@@ -248,96 +185,26 @@ public class AutonomousBlueBeacon2 extends LinearOpMode {
         //else if ((colorSensor.blue() >= 1) && (hsvValues[0] > 100) && (colorSensor.red() == 0)
         //&& (buttonPushed == false)
         if ((colorSensor.blue() >= 1) && (hsvValues[0] >= 100) && (colorSensor.red() == 0)) {
-        //if ((colorSensor.red() >= 1) && (colorSensor.blue() == 0)) {
+            //if ((colorSensor.red() >= 1) && (colorSensor.blue() == 0)) {
             telemetry.addData("Status", "BLUE DETECTED");
             telemetry.update();
-            sleep(2000);
+            sleep(500);
             // START: Bump the button!!
             bumpButton(SLOWER_FORWARD_SPEED, odsSensor, ODS_SENSOR_LEFT_THRESHOLD);
-            /*
-            robot.armMotor.setPower(SLOWER_FORWARD_SPEED);
-            robot.tableMotor.setPower(SLOWER_FORWARD_SPEED);
-            robot.leftMotor.setPower(SLOWER_FORWARD_SPEED);
-            robot.rightMotor.setPower(SLOWER_FORWARD_SPEED);
 
-            // 0.40 is about hitting the button on beacon, if the distance sensor is right hand
-            // side beacon detection, then this 0.40 is too much, about 0.20 would work.
-            while (opModeIsActive() && (odsSensor.getRawLightDetected() < 0.40)) { // GOOD to stop close to recognize color
-                //while (odsSensor.getRawLightDetected() < 0.1) {
-                telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
-                //telemetry.addData("Status", "In first while loop");
-                telemetry.update();
-                //sleep(10000);
-
-            }
-
-            // STOP to recognize color.
-            // GOOD, without these stop, the robot does not stop from above.
-            robot.armMotor.setPower(0.0);
-            robot.tableMotor.setPower(0.0);
-            robot.leftMotor.setPower(0.0);
-            robot.rightMotor.setPower(0.0);
-            // END: Bump the button!!
-            */
         }
         else { //Must be RED Color. Slide left and bump the button with right bumper.
             telemetry.addData("Status", "BLUE NOT DETECTED, sliding to LEFT!");
             telemetry.update();
-            sleep(2000);
+            sleep(500);
             //slideLeft(SLIDE_SPEED, 0.5);
-            goToLineFromLeft(SLOWER_SLIDE_SPEED, lightSensorRightFront, lightSensorRightBack, WHITE_THRESHOLD);
-            /*
-            robot.armMotor.setPower(-SLOWER_SLIDE_SPEED);
-            robot.tableMotor.setPower(SLOWER_SLIDE_SPEED);
-            robot.leftMotor.setPower(-SLOWER_SLIDE_SPEED);
-            robot.rightMotor.setPower(SLOWER_SLIDE_SPEED);
+            goToLineFromRight(SLOWER_SLIDE_SPEED, lightSensorRightFront, lightSensorRightBack, WHITE_THRESHOLD);
 
-            // Make sure to line up with two right light sensors.
-            while (opModeIsActive() && (lightSensorRightFront.getRawLightDetected() < WHITE_THRESHOLD)
-                    && (lightSensorRightBack.getRawLightDetected() < WHITE_THRESHOLD)) {
-
-                // Display the light level while we are looking for the line
-                telemetry.addData("Light Level",  lightSensor.getRawLightDetected());
-                telemetry.addData("Light Back Level",  lightSensorBack.getRawLightDetected());
-                telemetry.addData("Light Right Front Level",  lightSensorRightFront.getRawLightDetected());
-                telemetry.addData("Light Right Back Level",  lightSensorRightBack.getRawLightDetected());
-                telemetry.update();
-                idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
-            }
-
-            goStop();
-            */
-            sleep(1000);
+            sleep(500);
             // Then bump button
             //goForward(SLOWERST_FORWARD_SPEED, 0.3);
             bumpButton(SLOWER_FORWARD_SPEED, odsSensorRight, ODS_SENSOR_RIGHT_THRESHOLD);
-            /*
-            // START: Bump the button!!
-            robot.armMotor.setPower(SLOWER_FORWARD_SPEED);
-            robot.tableMotor.setPower(SLOWER_FORWARD_SPEED);
-            robot.leftMotor.setPower(SLOWER_FORWARD_SPEED);
-            robot.rightMotor.setPower(SLOWER_FORWARD_SPEED);
 
-            // 0.40 is about hitting the button on beacon, if the distance sensor is right hand
-            // side beacon detection, then this 0.40 is too much, about 0.20 would work.
-            // odsSensorRight has a low number
-            while (opModeIsActive() && (odsSensorRight.getRawLightDetected() < WHITE_THRESHOLD_ODS_SENSOR_RIGHT)) { // GOOD to stop close to recognize color
-                //while (odsSensor.getRawLightDetected() < 0.1) {
-                telemetry.addData("ODS Right Raw",    odsSensorRight.getRawLightDetected());
-                //telemetry.addData("Status", "In first while loop");
-                telemetry.update();
-                //sleep(10000);
-
-            }
-
-            // STOP to recognize color.
-            // GOOD, without these stop, the robot does not stop from above.
-            robot.armMotor.setPower(0.0);
-            robot.tableMotor.setPower(0.0);
-            robot.leftMotor.setPower(0.0);
-            robot.rightMotor.setPower(0.0);
-            // END: Bump the button!!
-            */
 
         }
         // END: Recognize Color
@@ -347,122 +214,80 @@ public class AutonomousBlueBeacon2 extends LinearOpMode {
         // up with front sensors.
 
         // Go back a bit after pressing the button
+        // CODE NEEDED!!
+        // Hit the center ball
+        // Go up the ramp and release the ball
         telemetry.addData("Status", "Backing up");
         telemetry.update();
-        sleep(1000);
+        sleep(500);
         goForward(-FORWARD_SPEED, 0.3);
-
-        sleep(1000);
-
-
-
-        // rotateLeft so front faces next white line on the next image
+        sleep(500);
+        // Face the next line
         turnLeft(FORWARD_SPEED, 0.8);
-        sleep(1000);
+        sleep(500);
+        goForward(FORWARD_SPEED, 0.5);
+        sleep(100);
 
-        // Go and stop at the next white line on next image
-        telemetry.addData("Status", "Going to detect next white line!!");
+        // Now go to the next line!
+        goForwardTillLine(SLOWER_FORWARD_SPEED, lightSensor, lightSensorRightFront);
+        sleep(500);
+        turnRight(FORWARD_SPEED, 0.8);
+        sleep(500);
+        goToLineFromLeft(SLOWER_SLIDE_SPEED, lightSensor, lightSensorBack, WHITE_THRESHOLD);
+        sleep(500);
+
+        // Recognize the color of the 2nd beacon
+        // START: First staright move close to the button where it can recognize color
+        goForwardTillDistance(SLOWERST_FORWARD_SPEED, odsSensor, ODS_SENSOR_COLOR_RECOG_THRESHOLD);
+        Color.RGBToHSV(colorSensor.red() * 8, colorSensor.green() * 8, colorSensor.blue() * 8, hsvValues);
+
+        telemetry.addData("Status", "FIRST stop");
+        telemetry.addData("Red  ", colorSensor.red());
+        telemetry.addData("Blue ", colorSensor.blue());
+        telemetry.addData("Hue ", hsvValues[0]);
         telemetry.update();
-        goForward(FORWARD_SPEED, 1.0);
-        sleep(1000);
-        goForwardTillLine(FORWARD_SPEED, lightSensor);
-        //slideLeft(SLIDE_SPEED, 3.5);
+        sleep(500);
+        // END: First staright move close to the button where it can recognize color
 
-        // rotateRight so it faces the beacon
-        // After turn, the left color sensor should be at the left button.
-        turnRight(FORWARD_SPEED, 1.0);
+        // START: Recognize RED Color
+        // Change to BLUE recognition
+        //else if ((colorSensor.blue() >= 1) && (hsvValues[0] > 100) && (colorSensor.red() == 0)
+        //&& (buttonPushed == false)
+        if ((colorSensor.blue() >= 1) && (hsvValues[0] >= 100) && (colorSensor.red() == 0)) {
+            //if ((colorSensor.red() >= 1) && (colorSensor.blue() == 0)) {
+            telemetry.addData("Status", "BLUE DETECTED");
+            telemetry.update();
+            sleep(500);
+            // START: Bump the button!!
+            bumpButton(SLOWER_FORWARD_SPEED, odsSensor, ODS_SENSOR_LEFT_THRESHOLD);
 
-        //
-        // Then, recognize the color and bump like before.
-        // CODE NEEDED HERE!
+        }
+        else { //Must be RED Color. Slide left and bump the button with right bumper.
+            telemetry.addData("Status", "BLUE NOT DETECTED, sliding to LEFT!");
+            telemetry.update();
+            sleep(500);
+            //slideLeft(SLIDE_SPEED, 0.5);
+            goToLineFromRight(SLOWER_SLIDE_SPEED, lightSensorRightFront, lightSensorRightBack, WHITE_THRESHOLD);
+
+            sleep(500);
+            // Then bump button
+            //goForward(SLOWERST_FORWARD_SPEED, 0.3);
+            bumpButton(SLOWER_FORWARD_SPEED, odsSensorRight, ODS_SENSOR_RIGHT_THRESHOLD);
 
 
+        }
 
 
-/*
-      robot.armMotor.setPower(FORWARD_SPEED);
-      robot.tableMotor.setPower(FORWARD_SPEED);
-      robot.leftMotor.setPower(FORWARD_SPEED);
-      robot.rightMotor.setPower(FORWARD_SPEED);
+        // Try to go back to the center base??
+        goForward(-FORWARD_SPEED, 0.3);
+        sleep(500);
+        turnLeft(FORWARD_SPEED, 0.4);
+        sleep(500);
+        goForward(-FORWARD_SPEED, 3.0);
+        sleep(500);
 
+        // All Move COMPLETE!!
 
-      while (opModeIsActive() && (odsSensor.getRawLightDetected() < 0.2)) { // GOOD to stop close to recognize color
-          //while (odsSensor.getRawLightDetected() < 0.1) {
-          telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
-
-          telemetry.addData("Status", "In 2nd while loop");
-          telemetry.update();
-          //sleep(10000);
-
-      }
-
-      robot.armMotor.setPower(0.0);
-      robot.tableMotor.setPower(0.0);
-      robot.leftMotor.setPower(0.0);
-      robot.rightMotor.setPower(0.0);
-      telemetry.addData("Status", "2nd stop");
-      sleep(5000);
-*/
-
-      /* BAD CODE - ROBOT DOES NOT STOP AT ALL, NO REFRESH OF SCREEN!!
-      while (odsSensor.getRawLightDetected() < 0.24) {
-          robot.armMotor.setPower(FORWARD_SPEED);
-          robot.tableMotor.setPower(FORWARD_SPEED);
-          robot.leftMotor.setPower(FORWARD_SPEED);
-          robot.rightMotor.setPower(FORWARD_SPEED);
-
-      }
-
-      // STOP to recognize color.
-      //robot.armMotor.setPower(0.0);
-      //robot.tableMotor.setPower(0.0);
-      //robot.leftMotor.setPower(0.0);
-      //robot.rightMotor.setPower(0.0);
-      telemetry.addData("Status", "Before 10 sec sleep");
-      //telemetry.update();
-      sleep(10000);
-      telemetry.addData("Status", "after 10 sec sleep");
-      //telemetry.update();
-      */
-
-        ////////////////////////////////////////
-        // HERE STARTS THE ROBOT MOVE CODE!!
-        // Go forward (until the distance is close)
-
-      /*
-      while (odsSensor.getLightDetected() < 0.04) {
-          robot.armMotor.setPower(FORWARD_SPEED);
-          robot.tableMotor.setPower(FORWARD_SPEED);
-          robot.leftMotor.setPower(FORWARD_SPEED);
-          robot.rightMotor.setPower(FORWARD_SPEED);
-      }
-      */
-        ;
-      /*
-      // STOP to recognize color.
-      runtime.reset();
-      while (opModeIsActive() && (odsSensor.getLightDetected() > 0.04)) {
-          telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
-          telemetry.addData("ODS Raw",    odsSensor.getRawLightDetected());
-          telemetry.addData("ODS Normal", odsSensor.getLightDetected());
-
-          robot.armMotor.setPower(0.0);
-          robot.tableMotor.setPower(0.0);
-          robot.leftMotor.setPower(0.0);
-          robot.rightMotor.setPower(0.0);
-
-          telemetry.update();
-          idle();
-      }
-      */
-      /*
-      if (odsSensor.getLightDetected() > 0.04) {
-          robot.armMotor.setPower(0.0);
-          robot.tableMotor.setPower(0.0);
-          robot.leftMotor.setPower(0.0);
-          robot.rightMotor.setPower(0.0);
-      }
-        */
         // while the op mode is active, loop and read the RGB data.
         // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
@@ -704,6 +529,22 @@ public class AutonomousBlueBeacon2 extends LinearOpMode {
         robot.rightMotor.setPower(0);
     }
 
+    public void handleBall(double speed, double duration) throws InterruptedException
+    {
+        // This function allows robot to go forward with speed, time duration argument.
+
+        robot.bottomArm.setPower(speed);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < duration)) {
+            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+            telemetry.update();
+            idle();
+        }
+
+        // Stop
+        goStop();
+    }
+
     public void goForwardTillDistance(double speed, OpticalDistanceSensor sensor, double threshold) throws InterruptedException
     {
         // This function allows robot to bump the button.
@@ -787,7 +628,7 @@ public class AutonomousBlueBeacon2 extends LinearOpMode {
     }
 
     public void goToLineFromRight(double speed, LightSensor sensor1, LightSensor sensor2,
-                                 double threshold) throws InterruptedException
+                                  double threshold) throws InterruptedException
     {
         // This function allows robot to line up to a line from left facing forward
         // START: Bump the button!!
@@ -830,7 +671,7 @@ public class AutonomousBlueBeacon2 extends LinearOpMode {
         goStop();
     }
 
-    public void goForwardTillLine(double speed, LightSensor sensor) throws InterruptedException
+    public void goForwardTillLine(double speed, LightSensor sensor1, LightSensor sensor2) throws InterruptedException
     {
         // This function allows robot to go forward with speed, time duration argument.
 
@@ -838,10 +679,12 @@ public class AutonomousBlueBeacon2 extends LinearOpMode {
         robot.tableMotor.setPower(speed);
         robot.leftMotor.setPower(speed);
         robot.rightMotor.setPower(speed);
-        while (opModeIsActive() && (sensor.getRawLightDetected() < WHITE_THRESHOLD)) {
+        while (opModeIsActive() && (sensor1.getRawLightDetected() < WHITE_THRESHOLD)
+                && sensor2.getRawLightDetected() < WHITE_THRESHOLD) {
 
             // Display the light level while we are looking for the line
-            telemetry.addData("Light Level",  sensor.getRawLightDetected());
+            telemetry.addData("Light Left Front Level",  sensor1.getRawLightDetected());
+            telemetry.addData("Light Right Front Level",  sensor2.getRawLightDetected());
             telemetry.update();
             idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
         }
@@ -945,6 +788,36 @@ public class AutonomousBlueBeacon2 extends LinearOpMode {
         goStop();
     }
 
+    public void rightWheelsForward(double speed, LightSensor sensor) throws InterruptedException
+    {
+
+        robot.leftMotor.setPower(speed); //Forward
+        robot.rightMotor.setPower(speed); //Backward
+        while (opModeIsActive() && (sensor.getRawLightDetected() < WHITE_THRESHOLD)) {
+
+            // Display the light level while we are looking for the line
+            telemetry.addData("Light Level",  sensor.getRawLightDetected());
+            telemetry.update();
+            idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
+        }
+        goStop();
+    }
+
+    public void leftWheelsForward(double speed, LightSensor sensor) throws InterruptedException
+    {
+
+        robot.armMotor.setPower(speed); //Forward
+        robot.tableMotor.setPower(speed); //Backward
+        while (opModeIsActive() && (sensor.getRawLightDetected() < WHITE_THRESHOLD)) {
+
+            // Display the light level while we are looking for the line
+            telemetry.addData("Light Level",  sensor.getRawLightDetected());
+            telemetry.update();
+            idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
+        }
+        goStop();
+    }
+
     public void frontWheelsToRight(double speed, LightSensor sensor) throws InterruptedException
     {
 
@@ -1008,7 +881,6 @@ public class AutonomousBlueBeacon2 extends LinearOpMode {
 
         goStop();
     }
-
 
     // Creates a matrix for determining the locations and orientations of objects
     // Units are millimeters for x, y, and z, and degrees for u, v, and w
