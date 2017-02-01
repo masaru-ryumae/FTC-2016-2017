@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * using Vuforia in FTC.
  */
 @Autonomous(name = "Vuforia Blue 1 with Functions")
+@Disabled
 public class VuforiaBlue1Func extends LinearOpMode
 {
     // Variables to be used for later

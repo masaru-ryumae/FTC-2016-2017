@@ -85,7 +85,7 @@ import java.util.List;
  */
 
 @Autonomous(name="Brainybot Vuforia Navigation", group ="Mina")
-//@Disabled
+@Disabled
 public class BrainybotVuforiaNavigation extends LinearOpMode {
 
     public static final String TAG = "Vuforia Sample";

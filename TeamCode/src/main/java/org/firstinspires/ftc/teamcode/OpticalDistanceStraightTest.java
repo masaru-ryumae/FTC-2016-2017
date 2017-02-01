@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /*
  * This is an example LinearOpMode that shows how to use
@@ -46,7 +47,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous(name = "MR ODS Straight Test", group = "Sensor")
-//@Disabled
+@Disabled
 public class OpticalDistanceStraightTest extends LinearOpMode {
 
   OpticalDistanceSensor odsSensor;  // Hardware Device Object

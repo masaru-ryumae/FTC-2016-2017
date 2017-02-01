@@ -40,6 +40,7 @@ import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /*
  *
@@ -55,7 +56,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 //
 // @Autonomous(name = "Sensor: HT color 2", group = "Sensor")
 @TeleOp(name = "Sensor: HT color 2", group = "Sensor")
-//@Disabled
+@Disabled
 public class SensorHTColor extends LinearOpMode {
 
   ColorSensor colorSensor;  // Hardware Device Object

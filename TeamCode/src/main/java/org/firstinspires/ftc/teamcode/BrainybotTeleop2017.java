@@ -34,22 +34,20 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.LightSensor;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-import com.qualcomm.robotcore.hardware.LightSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /**
  * This OpMode uses the common Pushbot hardware class to define the devices on the robot.
@@ -65,11 +63,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="BrainyBots Teleop Vision", group="Mina")
-@Disabled
-public class BrainybotTeleopVision extends LinearOpMode {
-        LightSensor lightSensor;  // Hardware Device Object
+@TeleOp(name="BrainyBots Teleop 2017 GOLD", group="Mina")
+//@Disabled
+public class BrainybotTeleop2017 extends LinearOpMode {
+        //LightSensor lightSensor;  // Hardware Device Object
 
+        /*
         VuforiaLocalizer vuforiaLocalizer;
         VuforiaLocalizer.Parameters parameters;
         VuforiaTrackables visionTargets;
@@ -80,7 +79,7 @@ public class BrainybotTeleopVision extends LinearOpMode {
         OpenGLMatrix phoneLocation;
 
         public static final String VUFORIA_KEY = "AbeG4Kr/////AAAAGYlYzgmqaUCvl9MEIXe5q7VG+bqPbYy/jH9ZIRe+MDld1JqQEnOy1ljD1xH4lUXpV5DRpXq3iD0LcgRxjm+mTWaIxZ7jB2GroVg6Nn/HbRwnDNTWqC3UBjNAuGjAlUUbMg/CC69vQXKcZl11f97ly/RIj2leGI5MimrUsaTqIcNOQe6UUnkof1LFcpT+18Z7OhqWeRnJJDh9krwMceY1TNW7IwgB+vCrFp25jeQJF9cwclsnieT/NHhjdratCGWhCdU2FHe6mQiO+pjcT2X0suJPdtwomWCVqGDg6clj0A/yHUOrC5YHJ/RROMvAidn1Uo0a1OXL2nguV0jVA/rUeqIEYxTvS5OV0ePxeXlcrAhS"; // Insert your own key here
-
+        */
     /* Declare OpMode members. */
         HardwareBrainybot robot = new HardwareBrainybot();   // Use a Minabot's hardware
         // could also use HardwarePushbotMatrix class.
@@ -90,17 +89,17 @@ public class BrainybotTeleopVision extends LinearOpMode {
         @Override
         public void runOpMode ()throws InterruptedException {
             // bPrevState and bCurrState represent the previous and current state of the button.
-            boolean bPrevState = false;
-            boolean bCurrState = false;
+            //boolean bPrevState = false;
+            //boolean bCurrState = false;
 
             // bLedOn represents the state of the LED.
-            boolean bLedOn = true;
+            //boolean bLedOn = true;
 
             // get a reference to our Light Sensor object.
-            lightSensor = hardwareMap.lightSensor.get("light sensor");
+            //lightSensor = hardwareMap.lightSensor.get("light sensor");
 
             // Set the LED state in the beginning.
-            lightSensor.enableLed(bLedOn);
+            //lightSensor.enableLed(bLedOn);
 
             double leftFrontY, leftRearY;
             double rightFrontY, rightRearY;
@@ -117,12 +116,12 @@ public class BrainybotTeleopVision extends LinearOpMode {
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
-            setupVuforia();
-            sleep(3000);
+            //setupVuforia();
+            //sleep(3000);
 
             // We don't know where the robot is, so set it to the origin
             // If we don't include this, it would be null, which would cause errors later on
-            lastKnownLocation = createMatrix(0, 0, 0, 0, 0, 0);
+            //lastKnownLocation = createMatrix(0, 0, 0, 0, 0, 0);
             robot.init(hardwareMap);
 
             // Send telemetry message to signify robot waiting;
@@ -131,7 +130,7 @@ public class BrainybotTeleopVision extends LinearOpMode {
 
             // Wait for the game to start (driver presses PLAY)
             waitForStart();
-            visionTargets.activate();
+            //visionTargets.activate();
 
             // run until the end of the match (driver presses STOP)
             while (opModeIsActive()) {
@@ -158,7 +157,7 @@ public class BrainybotTeleopVision extends LinearOpMode {
                 rightLadder = gamepad2.y;
                 servoLadder = gamepad2.b;
 
-
+                /*
                 // Ask the listener for the latest information on where the robot is
                 OpenGLMatrix latestLocation = listener.getUpdatedRobotLocation();
 
@@ -181,7 +180,7 @@ public class BrainybotTeleopVision extends LinearOpMode {
                 else {
                     telemetry.addData("Pos   ", "Unknown");
                 }
-
+                */
                 // Send information about whether the target is visible, and where the robot is
                 //telemetry.addData("Tracking " + target.getName(), listener.isVisible());
                 //telemetry.addData("Last Known Location", formatMatrix(lastKnownLocation));
@@ -286,9 +285,10 @@ public class BrainybotTeleopVision extends LinearOpMode {
                 }
 
                 // check the status of the x button .
-                bCurrState = gamepad1.x;
+                //bCurrState = gamepad1.x;
 
                 // check for button state transitions.
+                /*
                 if ((bCurrState) && (bCurrState != bPrevState)) {
 
                     // button is transitioning to a pressed state.  Toggle LED
@@ -298,7 +298,7 @@ public class BrainybotTeleopVision extends LinearOpMode {
 
                 // update previous state variable.
                 bPrevState = bCurrState;
-
+                */
                 // Send telemetry message to signify robot running;
                 //telemetry.addData("claw",  "Offset = %.2f", clawOffset);
                 telemetry.addData("leftFrontY", "%.2f", leftFrontY);
@@ -309,18 +309,18 @@ public class BrainybotTeleopVision extends LinearOpMode {
                 //telemetry.addData("rightFrontX", "%.2f", rightFrontX);
                 //telemetry.addData("leftRearX",  "%.2f", leftRearX);
                 //telemetry.addData("rightRearX", "%.2f", rightRearX);
-                telemetry.addData("Tracking " + target.getName(), listener.isVisible());
-                telemetry.addData("Last Known Location", formatMatrix(lastKnownLocation));
+                //telemetry.addData("Tracking " + target.getName(), listener.isVisible());
+                //telemetry.addData("Last Known Location", formatMatrix(lastKnownLocation));
                 // send the info back to driver station using telemetry function.
-                telemetry.addData("LED", bLedOn ? "On" : "Off");
-                telemetry.addData("Raw", lightSensor.getRawLightDetected());
-                telemetry.addData("Normal", lightSensor.getLightDetected());
+                //telemetry.addData("LED", bLedOn ? "On" : "Off");
+                //telemetry.addData("Raw", lightSensor.getRawLightDetected());
+                //telemetry.addData("Normal", lightSensor.getLightDetected());
 
                 telemetry.addData("Pos X ", robotX);
                 telemetry.addData("Pos Y ", robotY);
                 telemetry.addData("Bear  ", robotBearing);
                 //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
-                telemetry.addData("Pos   ", formatMatrix(lastKnownLocation));
+                //telemetry.addData("Pos   ", formatMatrix(lastKnownLocation));
 
                 telemetry.update();
 
@@ -330,45 +330,6 @@ public class BrainybotTeleopVision extends LinearOpMode {
             }
         }
 
-    public void setupVuforia()
-    {
-        // Setup parameters to create localizer
-        parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        vuforiaLocalizer = ClassFactory.createVuforiaLocalizer(parameters);
-
-        // These are the vision targets that we want to use
-        // The string needs to be the name of the appropriate .xml file in the assets folder
-        visionTargets = vuforiaLocalizer.loadTrackablesFromAsset("FTC_2016-17");
-
-        // Setup the target to be tracked
-        target = visionTargets.get(0); // 0 corresponds to the wheels target
-        target.setName("Wheels Target");
-        target.setLocation(createMatrix(0, 500, 0, 90, 0, 90));
-
-        // Set phone location on robot
-        phoneLocation = createMatrix(0, 225, 0, 90, 0, 0);
-
-        // Setup listener and inform it of phone information
-        listener = (VuforiaTrackableDefaultListener) target.getListener();
-        listener.setPhoneInformation(phoneLocation, parameters.cameraDirection);
-    }
-
-    // Creates a matrix for determining the locations and orientations of objects
-    // Units are millimeters for x, y, and z, and degrees for u, v, and w
-    public OpenGLMatrix createMatrix(float x, float y, float z, float u, float v, float w)
-    {
-        return OpenGLMatrix.translation(x, y, z).
-                multiplied(Orientation.getRotationMatrix(
-                        AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES, u, v, w));
-    }
-
-    // Formats a matrix into a readable string
-    public String formatMatrix(OpenGLMatrix matrix)
-    {
-        return matrix.formatAsTransform();
-    }
 }
 
 

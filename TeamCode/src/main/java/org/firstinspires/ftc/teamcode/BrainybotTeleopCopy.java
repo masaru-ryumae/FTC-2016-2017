@@ -34,6 +34,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /**
  * This OpMode uses the common Pushbot hardware class to define the devices on the robot.
@@ -49,8 +50,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="BrainyBots Teleop GOLD", group="Mina")
-//@Disabled
+@TeleOp(name="BrainyBots Teleop", group="Mina")
+@Disabled
 public class BrainybotTeleopCopy extends LinearOpMode {
 
     /* Declare OpMode members. */

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * using Vuforia in FTC.
  */
 @Autonomous(name = "1 - Blue Ramp", group = "Prod")
+@Disabled
 public class AutonomousBlueRamp extends LinearOpMode
 {
     // Variables to be used for later
@@ -45,8 +47,8 @@ public class AutonomousBlueRamp extends LinearOpMode
 
     public void runOpMode() throws InterruptedException
     {
-        setupVuforia();
-        sleep(3000);
+        //setupVuforia();
+        //sleep(3000);
 
         // We don't know where the robot is, so set it to the origin
         // If we don't include this, it would be null, which would cause errors later on
@@ -65,7 +67,7 @@ public class AutonomousBlueRamp extends LinearOpMode
         waitForStart();
 
         // Start tracking the targets
-        visionTargets.activate();
+        //visionTargets.activate();
 
         // Turn right 45 degrees for 1.2 sec
         robot.armMotor.setPower(FORWARD_SPEED);

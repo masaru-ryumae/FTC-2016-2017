@@ -59,8 +59,6 @@ public class SensorMROpticalDistance extends LinearOpMode {
     odsSensor = hardwareMap.opticalDistanceSensor.get("ods");
     odsSensorRight = hardwareMap.opticalDistanceSensor.get("ods right");
 
-    odsSensor.
-
     // wait for the start button to be pressed.
     waitForStart();
 

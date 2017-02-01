@@ -54,7 +54,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 
 @TeleOp(name="My Opmode", group="Mina")  // @Autonomous(...) is the other common choice
-// @Disabled
+@Disabled
 public class MyFirstOpMode extends LinearOpMode {
 
     /* Declare OpMode members. */
