@@ -62,7 +62,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name = "3 - Red Beacon/Beacon", group = "Prod")
+@Autonomous(name = "3 - Red Beacon/Beacon GOLD", group = "Prod")
 
 public class AutonomousRedBeacon2 extends LinearOpMode {
 
@@ -188,7 +188,7 @@ public class AutonomousRedBeacon2 extends LinearOpMode {
         if ((colorSensor.red() >= 1) && (colorSensor.blue() == 0)) {
             telemetry.addData("Status", "RED DETECTED");
             telemetry.update();
-            sleep(500);
+            sleep(1000);
             // START: Bump the button!!
             bumpButton(SLOWER_FORWARD_SPEED, odsSensor, ODS_SENSOR_LEFT_THRESHOLD);
 
@@ -196,7 +196,7 @@ public class AutonomousRedBeacon2 extends LinearOpMode {
         else { //Must be RED Color. Slide left and bump the button with right bumper.
             telemetry.addData("Status", "RED NOT DETECTED, sliding to LEFT!");
             telemetry.update();
-            sleep(500);
+            sleep(1000);
             //slideLeft(SLIDE_SPEED, 0.5);
             goToLineFromRight(SLOWER_SLIDE_SPEED, lightSensorRightFront, lightSensorRightBack, WHITE_THRESHOLD);
 
